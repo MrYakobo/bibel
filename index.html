@@ -40,20 +40,27 @@
         textarea {
             resize: none
         }
+
+        .red {
+            color: #a30c0c
+        }
+
+        .b--red {
+            border-color: #a30c0c;
+        }
     </style>
 </head>
 
 <body class="">
     <div id="app" class="ff-1 pa3 pt5">
-        <div class="w6" id="draggable" class="ba white">
-            <div id="draggableheader" class="o-0 bg-white w-100 ba tc"><img src="move.svg" class="h1 v-mid">
+        <div class="w6 black bg-white" id="draggable">
+            <div id="draggableheader" class="bg-black w-100 ba tc"><img src="move.svg" class="h1 v-mid">
             </div>
             <div>
-                <input disabled class="w-100 tracked ttu ph3 pv1 outline-0 bg-black bn white tl pr3"
+                <input disabled class="red bg-transparent w-100 tracked ttu ph3 pv1 outline-0 bn tl pr3"
                     v-model="words[i].reference">
-                <textarea disabled
-                    class=" bt-0 br-0 bb-0 bl bw1 b--red overflow-hidden w-100 h5 bg-black white pa3 outline-0"
-                    v-model="words[i].text"></textarea>
+                <p disabled class="bt-0 br-0 bb-0 bl bw2 b--red w-100 ph3 outline-0">{{words[i].text}}
+                </p>
             </div>
         </div>
     </div>
