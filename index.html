@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bulma.min.css">
+    <link rel="stylesheet" href="tachyons.min.css">
+    <script src="vue.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&display=swap"
+        rel="stylesheet">
+    <title>Document</title>
+    <style>
+        #draggable {
+            position: absolute;
+            z-index: 1;
+        }
+
+        #draggableheader {
+            cursor: move;
+        }
+
+        .ff-mono {
+            font-family: "Fira Mono";
+        }
+
+        .ff-1 {
+            font-family: "Fira Sans";
+            font-weight: 400;
+        }
+
+        .w6 {
+            width: 32rem
+        }
+
+        .outline-0 {
+            outline: 0;
+        }
+
+        textarea {
+            resize: none
+        }
+    </style>
+</head>
+
+<body class="">
+    <div id="app" class="ff-1 pa3 pt5">
+        <div class="w6" id="draggable" class="ba white">
+            <div id="draggableheader" class="o-0 bg-white w-100 ba tc"><img src="move.svg" class="h1 v-mid">
+            </div>
+            <div>
+                <input disabled class="w-100 tracked ttu ph3 pv1 outline-0 bg-black bn white tl pr3"
+                    v-model="words[i].reference">
+                <textarea disabled
+                    class=" bt-0 br-0 bb-0 bl bw1 b--red overflow-hidden w-100 h5 bg-black white pa3 outline-0"
+                    v-model="words[i].text"></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
+        authDomain: "bibelord-web.firebaseapp.com",
+        databaseURL: "https://bibelord-web.firebaseio.com",
+        projectId: "bibelord-web",
+        storageBucket: "bibelord-web.appspot.com",
+        messagingSenderId: "301360703596",
+        appId: "1:301360703596:web:8ff608549aa61c6701d049"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database()
+
+    function mod(n, m) {
+        return ((n % m) + m) % m;
+    }
+    var app = new Vue({
+        el: "#app",
+        data: {
+            i: 0,
+            pos: [0, 0],
+            words: [{
+                reference: "",
+                text: ""
+            }],
+            drag: null,
+        },
+        watch: {},
+        methods: {},
+        mounted() {
+            this.drag = document.getElementById('draggable')
+            db.ref("/").on("value", s => {
+                var t = s.val()
+                this.i = Math.min(t.i, t.words.length - 1)
+                this.pos = t.pos
+
+                this.drag.style.top = this.pos[1] + "px";
+                this.drag.style.left = this.pos[0] + "px";
+
+                this.words = t.words
+            })
+        }
+    })
+</script>
+
+</html>
