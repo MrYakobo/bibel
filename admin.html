@@ -1,263 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="assets/bulma.min.css" />
+        <link rel="stylesheet" href="assets/tachyons.min.css" />
+        <script src="assets/axios.min.js"></script>
+        <script src="assets/vue.js"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&display=swap"
+            rel="stylesheet"
+        />
+        <title>Admin</title>
+        <style>
+            html,
+            body {
+                width: 1920px;
+                height: 1080px;
+                font-size: 30px;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bulma.min.css">
-    <link rel="stylesheet" href="tachyons.min.css">
-    <script src="axios.min.js"></script>
-    <script src="vue.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&display=swap"
-        rel="stylesheet">
-    <title>Admin</title>
-    <style>
-        html,
-        body {
-            height: 100%
-        }
+            #draggable {
+                position: absolute;
+                z-index: 1;
+            }
 
-        #draggable {
-            position: absolute;
-            z-index: 1;
-        }
+            .ff-mono {
+                font-family: "Fira Mono";
+            }
 
-        .ff-mono {
-            font-family: "Fira Mono";
-        }
+            .ff-1 {
+                font-family: "Fira Sans";
+                font-weight: 400;
+            }
 
-        .ff-1 {
-            font-family: "Fira Sans";
-            font-weight: 400;
-        }
+            .w6 {
+                width: 32rem;
+            }
 
-        .w6 {
-            width: 32rem
-        }
+            .outline-0 {
+                outline: 0;
+            }
 
-        .outline-0 {
-            outline: 0;
-        }
+            .move {
+                cursor: move;
+            }
 
-        .move {
-            cursor: move
-        }
+            .transition {
+                transition-duration: 0.1s;
+            }
 
-        .transition {
-            transition-duration: .1s;
-        }
+            .no-resize {
+                resize: none;
+            }
 
-        .no-resize {
-            resize: none;
-        }
+            .hover-o-100:hover {
+                opacity: 1;
+            }
 
-        .hover-o-100:hover {
-            opacity: 1;
-        }
-    </style>
-</head>
+            .bg-thirds {
+                background-image: url("assets/thirds.png");
+                background-size: 1920px 1080px;
+                background-repeat: no-repeat;
+            }
 
-<body class="cover" style="background-image: url('thirds.png');">
-    <div id="app" class="ff-1 pl3 pt5">
+            .ff-2 {
+                font-family: "Cardo";
+            }
 
-        <div :class="['dt z-999 absolute transition', show_bulk ? '' : 'o-0']">
-            <textarea class="ba b--black-20 br2 no-resize mt2 bg-white black pa3 outline-0 ba" rows="25" cols="40"
-                v-model="bulk">
-            </textarea>
-            <br>
-            <button @click="bulk_import" class="button is-info">Bulk-import</button>
-        </div>
-        <div class="w6" id="draggable" class="ba white">
-            <div id="draggableheader" @mousedown="dragMouseDown" class="bg-blue w-100 ba tc move">
-                <!-- <img src="move.svg" class="h1 v-mid move"> -->
-                <div class="di tc w6 z-0">
-                    <!-- control panel -->
-                    <button class="is-small button is-ghost" @click="dec">&larr;</button>
-                    <button class="is-small button is-danger" @click="rm">&minus;</button>
-                    <div class="is-small button is-rounded is-static ff-mono">{{i+1}}/{{words.length}}</div>
-                    <button class="is-small button is-success" @click="add">&plus;</button>
-                    <button class="is-small button is-ghost" @click="inc">&rarr;</button>
-                </div>
-                <!-- <button @click="hor_center()" class="bg-white hover-bg-light-gray bn"><img src="ha.png"
+            .pointer-events-none {
+                pointer-events: none;
+            }
+
+            .h-800 {
+                height: 800px;
+            }
+        </style>
+    </head>
+
+    <body class="bg-thirds ff-2 ba">
+        <div id="app" class="pl3 pt5">
+            <div :class="['dt z-999 absolute transition', show_bulk ? '' : 'o-0 pointer-events-none']">
+                <textarea
+                    class="ba b--black-20 br2 no-resize mt2 bg-white black pa3 outline-0 ba"
+                    rows="25"
+                    cols="40"
+                    v-model="bulk"
+                >
+                </textarea>
+                <br />
+                <button @click="bulk_import" class="button is-info">Bulk-import</button>
+            </div>
+            <div class="w6" id="draggable" class="ba white">
+                <div id="draggableheader" @mousedown="dragMouseDown" class="bg-blue w-100 ba tc move">
+                    <!-- <img src="move.svg" class="h1 v-mid move"> -->
+                    <div class="di tc w6 z-0">
+                        <!-- control panel -->
+                        <button class="is-small button is-ghost" @click="dec">&larr;</button>
+                        <button class="is-small button is-danger" @click="rm">&minus;</button>
+                        <div class="is-small button is-rounded is-static ff-mono"> {{i+1}}/{{words.length}} </div>
+                        <button class="is-small button is-success" @click="add">&plus;</button>
+                        <button class="is-small button is-ghost" @click="inc">&rarr;</button>
+                    </div>
+                    <!-- <button @click="hor_center()" class="bg-white hover-bg-light-gray bn"><img src="ha.png"
                         class="h1"></button>
                 <button @click="ver_center()" class="bg-white hover-bg-light-gray bn"><img src="va.png"
                         class="h1"></button> -->
-            </div>
+                </div>
 
-            <div>
-                <input class="w-100 tracked ttu ph3 pv1 outline-0 bg-white ba black tl pr3"
-                    v-model="words[i].reference">
-                <!-- <button class="button is-info is-small" @click="get_bible" tabindex="-1">Hämta bibelord</button> -->
-                <textarea class="w-100 h5 bg-white black pa3 outline-0 ba" v-model="words[i].text"></textarea>
+                <div>
+                    <input
+                        class="w-100 tracked ttu ph3 pv1 outline-0 bg-white ba black tl pr3"
+                        v-model="words[i].reference"
+                    />
+                    <!-- <button class="button is-info is-small" @click="get_bible" tabindex="-1">Hämta bibelord</button> -->
+                    <textarea
+                        class="w-100 h-800 h5 bg-white black pa3 outline-0 ba tj lh-copy"
+                        v-model="words[i].text"
+                    ></textarea>
+                </div>
             </div>
         </div>
-    </div>
-</body>
-<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
-<script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
-        authDomain: "bibelord-web.firebaseapp.com",
-        databaseURL: "https://bibelord-web.firebaseio.com",
-        projectId: "bibelord-web",
-        storageBucket: "bibelord-web.appspot.com",
-        messagingSenderId: "301360703596",
-        appId: "1:301360703596:web:8ff608549aa61c6701d049"
-    };
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.database()
+    </body>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
+            authDomain: "bibelord-web.firebaseapp.com",
+            databaseURL: "https://bibelord-web.firebaseio.com",
+            projectId: "bibelord-web",
+            storageBucket: "bibelord-web.appspot.com",
+            messagingSenderId: "301360703596",
+            appId: "1:301360703596:web:8ff608549aa61c6701d049",
+        }
+        firebase.initializeApp(firebaseConfig)
+        var db = firebase.database()
 
-    function mod(n, m) {
-        return ((n % m) + m) % m;
-    }
-    var app = new Vue({
-        el: "#app",
-        data: {
-            i: 0,
-            pos: [0, 0],
-            words: [{
-                reference: "",
-                text: ""
-            }],
-            show_bulk: false,
-            drag: null,
-            pos3: 0,
-            pos4: 0,
-            bulk: `1 Mos 1:1-6
+        function mod(n, m) {
+            return ((n % m) + m) % m
+        }
+        var app = new Vue({
+            el: "#app",
+            data: {
+                i: 0,
+                pos: [0, 0],
+                words: [
+                    {
+                        reference: "",
+                        text: "",
+                    },
+                ],
+                show_bulk: false,
+                drag: null,
+                pos3: 0,
+                pos4: 0,
+                bulk: `1 Mos 1:1-6
 1 I begynnelsen skapade Gud himmel och jord. 2 Jorden var öde och tom, och mörker var över djupet. Och Guds Ande svävade över vattnet. 3 Gud sade: ”Varde ljus!” Och det blev ljus. 4 Gud såg att ljuset var gott, och han skilde ljuset från mörkret. 5 Gud kallade ljuset dag, och mörkret kallade han natt. Och det blev afton och det blev morgon, den första dagen. 6 Gud sade: ”Mitt i vattnet ska finnas ett valv som skiljer vatten från vatten.”
 
 Rom 8
 Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes lag har i Kristus Jesus gjort mig fri från syndens och dödens lag. 3 Det som var omöjligt för lagen, svag som den var genom den köttsliga naturen, det gjorde Gud genom att sända sin egen Son som syndoffer, till det yttre lik en syndig människa. I hans kropp fördömde Gud synden. 4 Så skulle lagens rättfärdiga krav uppfyllas i oss som inte lever efter köttet utan efter Anden.
-`
-        },
-        watch: {
-            i() {
-                this.write()
+`,
             },
-            pos() {
-                this.write()
-            },
-            words: {
-                handler() {
+            watch: {
+                i() {
                     this.write()
                 },
-                deep: true
-            }
-        },
-        methods: {
-            bulk_import() {
-                var words = this.bulk.split("\n\n").map(group => {
-                    var lines = group.split("\n")
-                    return {
-                        reference: lines[0],
-                        text: lines.slice(1).join("\n")
+                pos() {
+                    this.write()
+                },
+                words: {
+                    handler() {
+                        this.write()
+                    },
+                    deep: true,
+                },
+            },
+            methods: {
+                bulk_import() {
+                    var words = this.bulk.split("\n\n").map((group) => {
+                        var lines = group.split("\n")
+                        return {
+                            reference: lines[0],
+                            text: lines.slice(1).join("\n"),
+                        }
+                    })
+                    this.words = words
+                },
+                add() {
+                    this.words.push({
+                        reference: "",
+                        text: "",
+                    })
+                    this.i++
+                },
+                rm() {
+                    if (this.words.length > 1) {
+                        this.words.splice(this.i, 1)
+                        this.i--
                     }
+                },
+                write() {
+                    var o = {
+                        i: this.i,
+                        pos: this.pos,
+                        words: this.words,
+                    }
+                    db.ref("/").set(o)
+                },
+                inc() {
+                    this.i = Math.min(this.i + 1, this.words.length - 1)
+                },
+                dec() {
+                    this.i = Math.max(this.i - 1, 0)
+                },
+                hor_center() {
+                    this.pos[0] = screen.width / 2
+                    this.moveToPos()
+                },
+                get_bible() {
+                    // not implemented
+                    var ref = this.words[this.i].reference
+                    var url = "https://sfb.lind.sk/" + ref + "?sfb15"
+                    console.log(url)
+                    axios
+                        .get(url)
+                        .then((s) => {
+                            console.log(s)
+                        })
+                        .catch((s) => {
+                            console.error(s)
+                        })
+                },
+                dragMouseDown(e) {
+                    e = e || window.event
+                    e.preventDefault()
+                    // get the mouse cursor position at startup:
+                    this.pos3 = e.clientX
+                    this.pos4 = e.clientY
+                    document.onmouseup = this.closeDragElement
+                    // call a function whenever the cursor moves:
+                    document.onmousemove = this.elementDrag
+                },
+                elementDrag(e) {
+                    e = e || window.event
+                    e.preventDefault()
+                    // calculate the new cursor position:
+                    var pos1 = this.pos3 - e.clientX
+                    var pos2 = this.pos4 - e.clientY
+                    this.pos3 = e.clientX
+                    this.pos4 = e.clientY
+
+                    // set the element's new position:
+                    var newpos2 = this.drag.offsetTop - pos2
+                    var newpos1 = this.drag.offsetLeft - pos1
+                    this.pos = [newpos1, newpos2]
+                    this.moveToPos()
+                },
+                moveToPos() {
+                    this.drag.style.top = this.pos[1] + "px"
+                    this.drag.style.left = this.pos[0] + "px"
+                },
+                closeDragElement() {
+                    // stop moving when mouse button is released:
+                    document.onmouseup = null
+                    document.onmousemove = null
+                },
+            },
+            mounted() {
+                addEventListener("keyup", (e) => {
+                    var inTextField = e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
+                    if (e.key == "ArrowRight" && !inTextField) this.inc()
+                    else if (e.key == "ArrowLeft" && !inTextField) this.dec()
+                    else if (e.key == "Escape") this.show_bulk = !this.show_bulk
                 })
-                this.words = words
-            },
-            add() {
-                this.words.push({
-                    reference: "",
-                    text: ""
-                })
-                this.i++
-            },
-            rm() {
-                if (this.words.length > 1) {
-                    this.words.splice(this.i, 1)
-                    this.i--;
-                }
-            },
-            write() {
-                var o = {
-                    i: this.i,
-                    pos: this.pos,
-                    words: this.words
-                }
-                db.ref("/").set(o)
-            },
-            inc() {
-                this.i = Math.min(this.i + 1, this.words.length - 1)
-            },
-            dec() {
-                this.i = Math.max(this.i - 1, 0)
-            },
-            hor_center() {
-                this.pos[0] = screen.width / 2
-                this.moveToPos()
-            },
-            get_bible() {
-                // not implemented
-                var ref = this.words[this.i].reference
-                var url = "https://sfb.lind.sk/" + ref + "?sfb15"
-                console.log(url)
-                axios.get(url).then(s => {
-                    console.log(s)
-                }).catch(s => {
-                    console.error(s)
-                })
 
+                this.drag = document.getElementById("draggable")
+
+                db.ref("/")
+                    .once("value")
+                    .then((s) => {
+                        var t = s.val()
+                        this.i = Math.min(t.i, t.words.length - 1)
+                        this.pos = t.pos
+
+                        this.drag.style.top = this.pos[1] + "px"
+                        this.drag.style.left = this.pos[0] + "px"
+
+                        this.words = t.words
+                    })
             },
-            dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // get the mouse cursor position at startup:
-                this.pos3 = e.clientX;
-                this.pos4 = e.clientY;
-                document.onmouseup = this.closeDragElement;
-                // call a function whenever the cursor moves:
-                document.onmousemove = this.elementDrag;
-            },
-            elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // calculate the new cursor position:
-                var pos1 = this.pos3 - e.clientX;
-                var pos2 = this.pos4 - e.clientY;
-                this.pos3 = e.clientX;
-                this.pos4 = e.clientY;
-
-                // set the element's new position:
-                var newpos2 = (this.drag.offsetTop - pos2)
-                var newpos1 = (this.drag.offsetLeft - pos1)
-                this.pos = [newpos1, newpos2]
-                this.moveToPos()
-            },
-            moveToPos() {
-                this.drag.style.top = this.pos[1] + "px";
-                this.drag.style.left = this.pos[0] + "px";
-            },
-            closeDragElement() {
-                // stop moving when mouse button is released:
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
-        },
-        mounted() {
-            addEventListener("keyup", e => {
-                if (e.key == "ArrowRight")
-                    this.inc()
-                else if (e.key == "ArrowLeft")
-                    this.dec()
-                else if (e.key == "Escape")
-                    this.show_bulk = !this.show_bulk
-            })
-
-            this.drag = document.getElementById("draggable")
-
-            db.ref("/").once('value').then(s => {
-                var t = s.val()
-                this.i = Math.min(t.i, t.words.length - 1)
-                this.pos = t.pos
-
-                this.drag.style.top = this.pos[1] + "px";
-                this.drag.style.left = this.pos[0] + "px";
-
-                this.words = t.words
-            })
-        }
-    })
-</script>
-
+        })
+    </script>
 </html>

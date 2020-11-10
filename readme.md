@@ -13,13 +13,15 @@ db.json:
 ```json
 {
     "i": 0,
-    "position": [0,0],
-    "words": [
-        {
-            "ref": "1 Mos 1:1-10",
-            "text": "I begynnelsen...",
-            // "position": [0,0]
+    "pos": [0, 0],
+    "words": [{
+            "ref": "1 Mos 1:1",
+            "text": "I begynnelsen..."
         },
+        {
+            "ref": "2 Kor 7: 1",
+            "text": "Hej hej"
+        }
     ]
 }
 ```
