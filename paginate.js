@@ -1,0 +1,24 @@
+function paginate(txt, horizon, maxlen) {
+    var pages = []
+    var page = []
+
+    var arr = txt.split(" ")
+
+    if (arr.length < maxlen) return [txt]
+
+    for (var i = 0; i < arr.length; i++) {
+        var w = arr[i]
+        page.push(w)
+        if ((w.slice(-1) == "." && page.length >= maxlen - horizon) || page.length >= maxlen + horizon) {
+            pages.push(page.join(" "))
+            page = []
+        }
+    }
+
+    // if we have one last chunk left, push that
+    if (page.length > 0) {
+        pages.push(page.join(" "))
+    }
+
+    return pages
+}

@@ -17,7 +17,7 @@
             body {
                 width: 1920px;
                 height: 1080px;
-                font-size: 30px;
+                font-size: 44px;
             }
 
             #draggable {
@@ -75,10 +75,27 @@
             .h-800 {
                 height: 800px;
             }
+
+            .w-960 {
+                width: 960px;
+            }
+            .slide-fade-enter-active {
+                transition: all 0.2s ease;
+            }
+            .slide-fade-leave-active {
+                transition: all 0.2s ease;
+            }
+            .slide-fade-enter,
+            .slide-fade-leave-to {
+                opacity: 0;
+            }
+            .top-26 {
+                top: 26rem;
+            }
         </style>
     </head>
 
-    <body class="bg-thirds ff-2 ba">
+    <body class="bg-thirds ba">
         <div id="app" class="pl3 pt5">
             <div :class="['dt z-999 absolute transition', show_bulk ? '' : 'o-0 pointer-events-none']">
                 <textarea
@@ -91,40 +108,83 @@
                 <br />
                 <button @click="bulk_import" class="button is-info">Bulk-import</button>
             </div>
-            <div class="w6" id="draggable" class="ba white">
-                <div id="draggableheader" @mousedown="dragMouseDown" class="bg-blue w-100 ba tc move">
-                    <!-- <img src="move.svg" class="h1 v-mid move"> -->
-                    <div class="di tc w6 z-0">
+            <div class="w-960" id="draggable" class="ba white">
+                <div id="draggableheader" @mousedown="dragMouseDown" class="bg-dark-blue w-100 ba tc move">
+                    <div class="db h1 tc w6 z-0 h1">
+                        &nbsp;
                         <!-- control panel -->
-                        <button class="is-small button is-ghost" @click="dec">&larr;</button>
-                        <button class="is-small button is-danger" @click="rm">&minus;</button>
-                        <div class="is-small button is-rounded is-static ff-mono"> {{i+1}}/{{words.length}} </div>
-                        <button class="is-small button is-success" @click="add">&plus;</button>
-                        <button class="is-small button is-ghost" @click="inc">&rarr;</button>
                     </div>
-                    <!-- <button @click="hor_center()" class="bg-white hover-bg-light-gray bn"><img src="ha.png"
-                        class="h1"></button>
-                <button @click="ver_center()" class="bg-white hover-bg-light-gray bn"><img src="va.png"
-                        class="h1"></button> -->
                 </div>
-
-                <div>
+                <div class="flex">
                     <input
-                        class="w-100 tracked ttu ph3 pv1 outline-0 bg-white ba black tl pr3"
+                        class="ff-2 w-75 tracked ph3 pv1 outline-0 bg-white ba black tl pr3"
                         v-model="words[i].reference"
                     />
-                    <!-- <button class="button is-info is-small" @click="get_bible" tabindex="-1">Hämta bibelord</button> -->
-                    <textarea
-                        class="w-100 h-800 h5 bg-white black pa3 outline-0 ba tj lh-copy"
-                        v-model="words[i].text"
-                    ></textarea>
+
+                    <button
+                        :disabled="!show_import_button"
+                        :class="['w-25 button is-small', show_import_button ? 'is-success':'is-ghost', is_loading ? 'is-loading': '']"
+                        @click="get_bible"
+                        @contextmenu.prevent
+                        @mouseup.right="toggle_sfb"
+                        tabindex="-1"
+                        title="Hämta bibelord"
+                        >{{import_button}}</button
+                    >
                 </div>
+                <textarea class="ff-2 w-100 h-800 ph3 outline-0 tj lh-copy" v-model="words[i].text"></textarea>
+            </div>
+
+            <div class="absolute top-26 left-2 flex">
+                <button class="is-small button is-info is-outlined" @click="dec">&larr;</button>
+                <div class="notification">
+                    <div class="w6 tags" v-dragdrop="words" order="order">
+                        <div
+                            :class="['tag button', wi==i ? 'is-info' : '']"
+                            @click="set_active_slide(wi)"
+                            v-for="(w, wi) in words"
+                            :key="w.reference + w.text"
+                        >
+                            {{w.reference}}
+                            <button class="delete is-large" @click.stop.prevent="remove_at_index(wi)"></button>
+                        </div>
+                        <button class="tag button" @click="add">➕</button>
+                    </div>
+                </div>
+                <button class="is-small button is-info is-outlined" @click="inc">&rarr;</button>
             </div>
         </div>
     </body>
     <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
+    <!-- <script src="bibel.js"></script> -->
+    <script src="assets/sv_bcv_parser.js"></script>
+    <script src="assets/dragula.min.js"></script>
+    <script src="assets/lodash.min.js"></script>
+    <script src="assets/Dragdrop.js"></script>
+    <script src="paginate.js"></script>
+    <link rel="stylesheet" href="assets/dragula.min.css" />
     <script>
+        var bcv = new bcv_parser()
+        // Returns a function, that, as long as it continues to be invoked, will not
+        // be triggered. The function will be called after it stops being called for
+        // N milliseconds. If `immediate` is passed, trigger the function on the
+        // leading edge, instead of the trailing.
+        function debounce(func, wait, immediate) {
+            var timeout
+            return function () {
+                var context = this,
+                    args = arguments
+                var later = function () {
+                    timeout = null
+                    if (!immediate) func.apply(context, args)
+                }
+                var callNow = immediate && !timeout
+                clearTimeout(timeout)
+                timeout = setTimeout(later, wait)
+                if (callNow) func.apply(context, args)
+            }
+        }
         var firebaseConfig = {
             apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
             authDomain: "bibelord-web.firebaseapp.com",
@@ -134,12 +194,21 @@
             messagingSenderId: "301360703596",
             appId: "1:301360703596:web:8ff608549aa61c6701d049",
         }
+
         firebase.initializeApp(firebaseConfig)
         var db = firebase.database()
 
         function mod(n, m) {
             return ((n % m) + m) % m
         }
+        function titleCase(str) {
+            str = str.toLowerCase().split(" ")
+            for (var i = 0; i < str.length; i++) {
+                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1)
+            }
+            return str.join(" ")
+        }
+
         var app = new Vue({
             el: "#app",
             data: {
@@ -152,22 +221,33 @@
                     },
                 ],
                 show_bulk: false,
+                show_import_button: false,
+                is_loading: false,
                 drag: null,
                 pos3: 0,
                 pos4: 0,
+                inited: false,
+                curr_sfb: "sfb15",
                 bulk: `1 Mos 1:1-6
-1 I begynnelsen skapade Gud himmel och jord. 2 Jorden var öde och tom, och mörker var över djupet. Och Guds Ande svävade över vattnet. 3 Gud sade: ”Varde ljus!” Och det blev ljus. 4 Gud såg att ljuset var gott, och han skilde ljuset från mörkret. 5 Gud kallade ljuset dag, och mörkret kallade han natt. Och det blev afton och det blev morgon, den första dagen. 6 Gud sade: ”Mitt i vattnet ska finnas ett valv som skiljer vatten från vatten.”
+            1 I begynnelsen skapade Gud himmel och jord. 2 Jorden var öde och tom, och mörker var över djupet. Och Guds Ande svävade över vattnet. 3 Gud sade: ”Varde ljus!” Och det blev ljus. 4 Gud såg att ljuset var gott, och han skilde ljuset från mörkret. 5 Gud kallade ljuset dag, och mörkret kallade han natt. Och det blev afton och det blev morgon, den första dagen. 6 Gud sade: ”Mitt i vattnet ska finnas ett valv som skiljer vatten från vatten.”
 
-Rom 8
-Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes lag har i Kristus Jesus gjort mig fri från syndens och dödens lag. 3 Det som var omöjligt för lagen, svag som den var genom den köttsliga naturen, det gjorde Gud genom att sända sin egen Son som syndoffer, till det yttre lik en syndig människa. I hans kropp fördömde Gud synden. 4 Så skulle lagens rättfärdiga krav uppfyllas i oss som inte lever efter köttet utan efter Anden.
-`,
+            Rom 8
+            Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes lag har i Kristus Jesus gjort mig fri från syndens och dödens lag. 3 Det som var omöjligt för lagen, svag som den var genom den köttsliga naturen, det gjorde Gud genom att sända sin egen Son som syndoffer, till det yttre lik en syndig människa. I hans kropp fördömde Gud synden. 4 Så skulle lagens rättfärdiga krav uppfyllas i oss som inte lever efter köttet utan efter Anden.
+            `,
             },
             watch: {
                 i() {
                     this.write()
                 },
-                pos() {
-                    this.write()
+                curr_reference(n) {
+                    var ents = bcv.parse(n).entities
+                    if (ents.length > 0) {
+                        var type = ents[0].type
+                        var allowed = ["bcv", "bc", "range"]
+                        this.show_import_button = allowed.includes(type)
+                    } else {
+                        this.show_import_button = false
+                    }
                 },
                 words: {
                     handler() {
@@ -176,7 +256,35 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     deep: true,
                 },
             },
+            computed: {
+                data_ready() {
+                    return this.curr_reference != "" && this.curr_text != ""
+                },
+                curr_reference() {
+                    // console.log(this.i)
+                    // console.log(this.words)
+                    try {
+                        return this.words[this.i].reference
+                    } catch (e) {
+                        return ""
+                    }
+                },
+                curr_text() {
+                    try {
+                        return this.words[this.i].text
+                    } catch (e) {
+                        return ""
+                    }
+                },
+                import_button() {
+                    if (this.show_import_button) return "📖 (" + this.curr_sfb + ")"
+                    return "🤷"
+                },
+            },
             methods: {
+                toggle_sfb() {
+                    this.curr_sfb = { sfb15: "sfb98", sfb98: "sfb15" }[this.curr_sfb]
+                },
                 bulk_import() {
                     var words = this.bulk.split("\n\n").map((group) => {
                         var lines = group.split("\n")
@@ -188,11 +296,25 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     this.words = words
                 },
                 add() {
-                    this.words.push({
+                    this.words.splice(this.words.length, 0, {
                         reference: "",
                         text: "",
                     })
-                    this.i++
+                    // var newi = Math.min(Math.max(this.i + 1, 0), this.words.length - 1)
+                    var newi = this.words.length - 1
+                    console.log("newi", newi)
+                    this.i = newi
+                },
+                set_active_slide(wi) {
+                    this.i = wi
+                },
+                remove_at_index(wi) {
+                    console.log("wi", wi)
+                    console.log(this.words)
+                    if (this.words.length > 1) {
+                        this.words.splice(wi, 1)
+                        this.i = Math.min(Math.max(this.i - 1, 0), this.words.length - 1)
+                    }
                 },
                 rm() {
                     if (this.words.length > 1) {
@@ -201,12 +323,16 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     }
                 },
                 write() {
-                    var o = {
-                        i: this.i,
-                        pos: this.pos,
-                        words: this.words,
-                    }
-                    db.ref("/").set(o)
+                    if (!this.inited) return
+
+                    debounce(() => {
+                        var o = {
+                            i: this.i,
+                            pos: this.pos,
+                            words: this.words,
+                        }
+                        db.ref("/").set(o)
+                    }, 200)()
                 },
                 inc() {
                     this.i = Math.min(this.i + 1, this.words.length - 1)
@@ -218,17 +344,38 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     this.pos[0] = screen.width / 2
                     this.moveToPos()
                 },
+                split_bible_slides(original_ref, original_text, words_per_slide) {
+                    console.log(original_text)
+                    var arr = paginate(original_text, 8, 100)
+                    return arr.map((s, i) => {
+                        var info = ""
+                        if (arr.length > 1) {
+                            info = ` (${i + 1}/${arr.length})`
+                        }
+                        var o = { reference: `${original_ref}${info}`, text: s }
+                        return o
+                    })
+                },
                 get_bible() {
-                    // not implemented
-                    var ref = this.words[this.i].reference
-                    var url = "https://sfb.lind.sk/" + ref + "?sfb15"
+                    var ref = this.curr_reference
+                    var url = "https://sfb.lind.sk/" + titleCase(ref) + "?" + this.curr_sfb
                     console.log(url)
+                    this.is_loading = true
                     axios
                         .get(url)
                         .then((s) => {
-                            console.log(s)
+                            var arr = this.split_bible_slides(ref, s.data)
+                            // console.log(arr)
+                            // console.log(s.data)
+                            // console.log(arr.map((s) => s.text).join(" "))
+
+                            //add the paginated slides and remove the current slide
+                            this.words.splice(this.i, 1, ...arr)
+                            this.is_loading = false
                         })
                         .catch((s) => {
+                            this.show_import_button = false
+                            this.is_loading = false
                             console.error(s)
                         })
                 },
@@ -254,8 +401,11 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     // set the element's new position:
                     var newpos2 = this.drag.offsetTop - pos2
                     var newpos1 = this.drag.offsetLeft - pos1
-                    this.pos = [newpos1, newpos2]
-                    this.moveToPos()
+
+                    if (newpos2 >= 0 && newpos1 >= 0) {
+                        this.pos = [newpos1, newpos2]
+                        this.moveToPos()
+                    }
                 },
                 moveToPos() {
                     this.drag.style.top = this.pos[1] + "px"
@@ -265,6 +415,8 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     // stop moving when mouse button is released:
                     document.onmouseup = null
                     document.onmousemove = null
+                    // and write to cloud
+                    this.write()
                 },
             },
             mounted() {
@@ -272,7 +424,7 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                     var inTextField = e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
                     if (e.key == "ArrowRight" && !inTextField) this.inc()
                     else if (e.key == "ArrowLeft" && !inTextField) this.dec()
-                    else if (e.key == "Escape") this.show_bulk = !this.show_bulk
+                    // else if (e.key == "Escape") this.show_bulk = !this.show_bulk
                 })
 
                 this.drag = document.getElementById("draggable")
@@ -288,6 +440,7 @@ Så finns nu ingen fördömelse för dem som är i Kristus Jesus. 2 Livets Andes
                         this.drag.style.left = this.pos[0] + "px"
 
                         this.words = t.words
+                        this.inited = true
                     })
             },
         })

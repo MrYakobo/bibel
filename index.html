@@ -1,141 +1,198 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-black">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="assets/bulma.min.css" />
+        <link rel="stylesheet" href="assets/tachyons.min.css" />
+        <script src="assets/vue.js"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&family=Passion+One:wght@700&display=swap"
+            rel="stylesheet"
+        />
+        <title>Document</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+                font-size: 44px;
+            }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="assets/bulma.min.css" />
-    <link rel="stylesheet" href="assets/tachyons.min.css" />
-    <script src="assets/vue.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&display=swap"
-        rel="stylesheet" />
-    <title>Document</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-            font-size: 30px;
-        }
+            #draggable {
+                position: absolute;
+                z-index: 1;
+            }
 
-        #draggable {
-            position: absolute;
-            z-index: 1;
-        }
+            #draggableheader {
+                cursor: move;
+            }
 
-        #draggableheader {
-            cursor: move;
-        }
+            .ff-mono {
+                font-family: "Fira Mono";
+            }
 
-        .ff-mono {
-            font-family: "Fira Mono";
-        }
+            .ff-1 {
+                font-family: "Fira Sans";
+                font-weight: 400;
+            }
 
-        .ff-1 {
-            font-family: "Fira Sans";
-            font-weight: 400;
-        }
+            .w6 {
+                width: 32rem;
+            }
 
-        .w6 {
-            width: 32rem;
-        }
+            .outline-0 {
+                outline: 0;
+            }
 
-        .outline-0 {
-            outline: 0;
-        }
+            textarea {
+                resize: none;
+            }
 
-        textarea {
-            resize: none;
-        }
+            .red {
+                color: #a30c0c;
+            }
 
-        .red {
-            color: #a30c0c;
-        }
+            .bg-red {
+                background-color: #a30c0c;
+            }
+            .b--red {
+                border-color: #a30c0c;
+            }
 
-        .b--red {
-            border-color: #a30c0c;
-        }
+            .bg-sara {
+                background: url("assets/sara.png");
+                background-size: 1920px 1080px;
+                background-repeat: no-repeat;
+            }
 
-        .bg-white-transparent {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
+            .ff-2 {
+                font-family: "Cardo";
+            }
 
-        .bg-sara {
-            background: url("assets/sara.png");
-            background-size: 1920px 1080px;
-            background-repeat: no-repeat;
-        }
+            .pre-wrap {
+                white-space: pre-wrap;
+            }
 
-        .ff-2 {
-            font-family: "Cardo";
-        }
+            .ff-3 {
+                font-family: "Passion One";
+            }
+            .bbrr-pill {
+                border-bottom-right-radius: 999px;
+            }
+            .min-w4 {
+                min-width: 8rem;
+            }
+            .small-text-shadow {
+                text-shadow: 3px 3px 2px #580000;
+            }
+            .lh-copy {
+                line-height: 1.4;
+            }
+            .w-960 {
+                width: 960px;
+            }
 
-        .pre-wrap {
-            white-space: pre-wrap;
-        }
-    </style>
-</head>
+            .bg-near-white {
+                background-color: #fbfbfb;
+            }
 
-<body class="bg-sara ff-2">
-    <div id="app" class="pa3 pt5">
-        <div class="w6 black bg-white" id="draggable">
-            <!-- <div id="draggableheader" class="bg-white-transparent w-100 tc"><img src="" class="h1 v-mid">
-            </div> -->
-            <div class="pv3 ph4">
-                <input disabled class="red bg-transparent w-100 tracked ph3 pv1 outline-0 bn tl pr3"
-                    v-model="words[i].reference" />
+            .bg-white-transparent {
+                background-color: rgba(255, 255, 255, 0.75);
+            }
+            .frost {
+                /* backdrop-filter: blur(10px) grayscale(0.4); */
+            }
 
-                <!-- prettier-ignore -->
-                <p disabled class="bt-0 br-0 bb-0 bl bw2 b--red w-100 ph3 outline-0 tj lh-copy pre-wrap">
-                    {{words[i].text}}</p>
+            .slide-fade-enter-active {
+                transition: all 0.2s ease;
+            }
+            .slide-fade-leave-active {
+                transition: all 0.2s ease;
+            }
+            .slide-fade-enter,
+            .slide-fade-leave-to {
+                filter: blur(9px);
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+
+    <body class="ff-2">
+        <div id="app" class="pa3 pt5">
+            <div class="w-960 dark-gray" id="draggable">
+                <div class="pb3 bg-white-transparent frost ba b--white bw1 br2">
+                    <span
+                        class="ttu bg-red tracked white ff-3 fw3 pt1 pb1 pl3 pr4 outline-0 bn tl bbrr-pill pr3 min-w4 dib small-text-shadow"
+                    >
+                        <transition name="slide-fade" mode="out-in">
+                            <span :key="words[i].reference">{{words[i].reference}}</span>
+                        </transition>
+                    </span>
+
+                    <!-- prettier-ignore -->
+                    <div class="pt3 bt-0 br-0 bb-0 bl bw2 b--red">
+                        <transition name="slide-fade" mode="out-in">
+                            <p class="w-100 ph3 outline-0 tj lh-copy" :key="curr_text">{{curr_text}}</p>
+                        </transition>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</body>
-<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
-<script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
-        authDomain: "bibelord-web.firebaseapp.com",
-        databaseURL: "https://bibelord-web.firebaseio.com",
-        projectId: "bibelord-web",
-        storageBucket: "bibelord-web.appspot.com",
-        messagingSenderId: "301360703596",
-        appId: "1:301360703596:web:8ff608549aa61c6701d049",
-    }
-    firebase.initializeApp(firebaseConfig)
-    var db = firebase.database()
+    </body>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.13.2/firebase-database.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyChsTmAG3quMze7D-CycF4BHqVvTVbyAr0",
+            authDomain: "bibelord-web.firebaseapp.com",
+            databaseURL: "https://bibelord-web.firebaseio.com",
+            projectId: "bibelord-web",
+            storageBucket: "bibelord-web.appspot.com",
+            messagingSenderId: "301360703596",
+            appId: "1:301360703596:web:8ff608549aa61c6701d049",
+        }
+        firebase.initializeApp(firebaseConfig)
+        var db = firebase.database()
 
-    function mod(n, m) {
-        return ((n % m) + m) % m
-    }
-    var app = new Vue({
-        el: "#app",
-        data: {
-            i: 0,
-            pos: [0, 0],
-            words: [{
-                reference: "",
-                text: "",
-            }, ],
-            drag: null,
-        },
-        watch: {},
-        methods: {},
-        mounted() {
-            this.drag = document.getElementById("draggable")
-            db.ref("/").on("value", (s) => {
-                var t = s.val()
-                this.i = Math.min(t.i, t.words.length - 1)
-                this.pos = t.pos
+        function mod(n, m) {
+            return ((n % m) + m) % m
+        }
+        var app = new Vue({
+            el: "#app",
+            data: {
+                debug: location.search == "?debug",
+                i: 0,
+                pos: [0, 0],
+                words: [
+                    {
+                        reference: "",
+                        text: "",
+                    },
+                ],
+                drag: null,
+            },
+            computed: {
+                curr_text() {
+                    return this.words[this.i].text
+                },
+            },
+            methods: {},
+            mounted() {
+                if (this.debug) {
+                    document.body.classList.add("bg-sara")
+                }
+                this.drag = document.getElementById("draggable")
+                db.ref("/").on("value", (s) => {
+                    var t = s.val()
+                    this.i = Math.min(t.i, t.words.length - 1)
+                    this.pos = t.pos
 
-                this.drag.style.top = this.pos[1] + "px"
-                this.drag.style.left = this.pos[0] + "px"
+                    this.drag.style.top = this.pos[1] + "px"
+                    this.drag.style.left = this.pos[0] + "px"
 
-                this.words = t.words
-            })
-        },
-    })
-</script>
-
+                    this.words = t.words
+                })
+            },
+        })
+    </script>
 </html>
