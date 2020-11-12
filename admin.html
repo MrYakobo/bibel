@@ -6,11 +6,9 @@
         <link rel="stylesheet" href="assets/bulma.min.css" />
         <link rel="stylesheet" href="assets/tachyons.min.css" />
         <script src="assets/axios.min.js"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Cardo&display=swap" rel="stylesheet" />
         <script src="assets/vue.js"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Fira+Sans:wght@200;400;700&display=swap"
-            rel="stylesheet"
-        />
         <title>Admin</title>
         <style>
             html,
@@ -23,15 +21,6 @@
             #draggable {
                 position: absolute;
                 z-index: 1;
-            }
-
-            .ff-mono {
-                font-family: "Fira Mono";
-            }
-
-            .ff-1 {
-                font-family: "Fira Sans";
-                font-weight: 400;
             }
 
             .w6 {
@@ -119,6 +108,7 @@
                     <input
                         class="ff-2 w-75 tracked ph3 pv1 outline-0 bg-white ba black tl pr3"
                         v-model="words[i].reference"
+                        placeholder="Exempel: Joh 3:16"
                     />
 
                     <button
@@ -137,7 +127,7 @@
 
             <div class="absolute top-26 left-2 flex">
                 <button class="is-small button is-info is-outlined" @click="dec">&larr;</button>
-                <div class="notification">
+                <div class="notification flex">
                     <div class="w6 tags" v-dragdrop="words" order="order">
                         <div
                             :class="['tag button', wi==i ? 'is-info' : '']"
@@ -146,10 +136,14 @@
                             :key="w.reference + w.text"
                         >
                             {{w.reference}}
-                            <button class="delete is-large" @click.stop.prevent="remove_at_index(wi)"></button>
+                            <button
+                                v-show="words.length > 1"
+                                class="delete is-large"
+                                @click.stop.prevent="remove_at_index(wi)"
+                            ></button>
                         </div>
-                        <button class="tag button" @click="add">➕</button>
                     </div>
+                    <button class="tag button" @click="add">➕</button>
                 </div>
                 <button class="is-small button is-info is-outlined" @click="inc">&rarr;</button>
             </div>
@@ -302,15 +296,15 @@
                     })
                     // var newi = Math.min(Math.max(this.i + 1, 0), this.words.length - 1)
                     var newi = this.words.length - 1
-                    console.log("newi", newi)
+                    // console.log("newi", newi)
                     this.i = newi
                 },
                 set_active_slide(wi) {
                     this.i = wi
                 },
                 remove_at_index(wi) {
-                    console.log("wi", wi)
-                    console.log(this.words)
+                    // console.log("wi", wi)
+                    // console.log(this.words)
                     if (this.words.length > 1) {
                         this.words.splice(wi, 1)
                         this.i = Math.min(Math.max(this.i - 1, 0), this.words.length - 1)
@@ -332,7 +326,7 @@
                             words: this.words,
                         }
                         db.ref("/").set(o)
-                    }, 200)()
+                    }, 100)()
                 },
                 inc() {
                     this.i = Math.min(this.i + 1, this.words.length - 1)
@@ -345,7 +339,7 @@
                     this.moveToPos()
                 },
                 split_bible_slides(original_ref, original_text, words_per_slide) {
-                    console.log(original_text)
+                    // console.log(original_text)
                     var arr = paginate(original_text, 8, 100)
                     return arr.map((s, i) => {
                         var info = ""
@@ -364,6 +358,7 @@
                     axios
                         .get(url)
                         .then((s) => {
+                            //remove empty slides
                             var arr = this.split_bible_slides(ref, s.data)
                             // console.log(arr)
                             // console.log(s.data)

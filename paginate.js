@@ -20,5 +20,6 @@ function paginate(txt, horizon, maxlen) {
         pages.push(page.join(" "))
     }
 
-    return pages
+    //no empty slides plz
+    return pages.filter((s) => s.trim() != "")
 }
