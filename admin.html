@@ -342,11 +342,11 @@
                     // console.log(original_text)
                     var arr = paginate(original_text, 8, 100)
                     return arr.map((s, i) => {
-                        var info = ""
-                        if (arr.length > 1) {
-                            info = ` (${i + 1}/${arr.length})`
-                        }
-                        var o = { reference: `${original_ref}${info}`, text: s }
+                        // var info = ""
+                        // if (arr.length > 1) {
+                        //     info = ` (${i + 1}/${arr.length})`
+                        // }
+                        var o = { reference: original_ref, text: s }
                         return o
                     })
                 },
