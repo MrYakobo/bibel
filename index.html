@@ -9,133 +9,45 @@
     <script src="assets/vue.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Cardo:wght@400&family=Passion+One:wght@700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Varta:wght@700&family=Source+Sans+Pro:ital,wght@1,700&display=swap"
         rel="stylesheet" />
-    <title>Document</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-            font-size: 44px;
-        }
 
-        #draggable {
-            position: absolute;
-            z-index: 1;
-        }
-
-        #draggableheader {
-            cursor: move;
-        }
-
-        .w6 {
-            width: 32rem;
-        }
-
-        .outline-0 {
-            outline: 0;
-        }
-
-        textarea {
-            resize: none;
-        }
-
-        .red {
-            color: #a30c0c;
-        }
-
-        .bg-red {
-            background-color: #a30c0c;
-        }
-
-        .b--red {
-            border-color: #a30c0c;
-        }
-
-        .bg-sara {
-            background: url("assets/sara.png");
-            background-size: 1920px 1080px;
-            background-repeat: no-repeat;
-        }
-
-        .ff-2 {
-            font-family: "Cardo";
-        }
-
-        .pre-wrap {
-            white-space: pre-wrap;
-        }
-
-        .ff-3 {
-            font-family: "Passion One";
-        }
-
-        .bbrr-pill {
-            border-bottom-right-radius: 999px;
-        }
-
-        .min-w4 {
-            min-width: 8rem;
-        }
-
-        .small-text-shadow {
-            text-shadow: 3px 3px 2px #580000;
-        }
-
-        .lh-copy {
-            line-height: 1.4;
-        }
-
-        .w-960 {
-            width: 960px;
-        }
-
-        .bg-near-white {
-            background-color: #fbfbfb;
-        }
-
-        .bg-white-transparent {
-            background-color: rgba(255, 255, 255, 0.75);
-        }
-
-        .frost {
-            /* backdrop-filter: blur(10px) grayscale(0.4); */
-        }
-
-        .slide-fade-enter-active {
-            transition: all 0.2s ease;
-        }
-
-        .slide-fade-leave-active {
-            transition: all 0.2s ease;
-        }
-
-        .slide-fade-enter,
-        .slide-fade-leave-to {
-            filter: blur(9px);
-            opacity: 0.5;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <title>Bibel</title>
 </head>
 
-<body class="ff-2">
+<body class="ff-2 bg-sara">
     <div id="app" class="pa3 pt5">
-        <div class="w-960 dark-gray" id="draggable" ref="draggable">
-            <div class="pb3 bg-white-transparent frost ba b--white bw1 br2">
-                <span
-                    class="ttu bg-red tracked white ff-3 fw3 pt1 pb1 pl3 pr4 outline-0 bn tl bbrr-pill pr3 min-w4 dib small-text-shadow">
-                    <transition name="slide-fade" mode="out-in">
+        <div class="white fixed z-2 center-x-1080" id="draggable" ref="draggable">
+            <transition name="fade" appear>
+                <div v-if="show">
+                    <span class="ff-4 f4 fw6 pl3 pr4 outline-0 bn tl dib text-shadow">
                         <span :key="words[i].reference">{{words[i].reference}}</span>
-                    </transition>
-                </span>
+                    </span>
+                    <div class="w-960">
+                        <!-- prettier-ignore -->
+                        <!-- we want the text to be based around bottom-0 -->
+                        <p class="f6 h3-5 dtc v-mid ph3 outline-0 tj ff-3" style="line-height: 1.2rem;"
+                            :key="curr_text">
+                            {{curr_text}}
+                        </p>
+                    </div>
 
-                <!-- prettier-ignore -->
-                <div class="pt3 bt-0 br-0 bb-0 bl bw2 b--red">
-                    <transition name="slide-fade" mode="out-in">
-                        <p class="w-100 ph3 outline-0 tj lh-copy" :key="curr_text">{{curr_text}}</p>
-                    </transition>
                 </div>
-            </div>
+            </transition>
+        </div>
+        <!-- used for background black thing -->
+        <div class="white fixed z-1 center-x-1080" id="background-thing">
+            <span class="ff-4 f4 fw6 pl3 pr4 outline-0 bn tl dib text-shadow">
+                <span :key="words[i].reference">&nbsp;</span>
+            </span>
+            <transition name="apple" appear>
+                <div v-if="show" id="bg" class="center bg-black-50 bl br b--red bw2 w-960">
+                    <p class="dn h3-5 f6 dtc v-mid ph3 outline-0 tj ff-3" style="line-height: 1.2rem;">
+                        &nbsp;
+                    </p>
+                </div>
+            </transition>
         </div>
     </div>
 </body>
@@ -168,6 +80,7 @@
                 text: "",
             }, ],
             drag: null,
+            show: false
         },
         computed: {
             curr_text() {
@@ -185,9 +98,11 @@
                 var t = s.val()
                 that.i = Math.min(t.i, t.words.length - 1)
                 that.pos = t.pos
+                that.show = true
 
-                that.drag.style.top = that.pos[1] + "px"
-                that.drag.style.left = that.pos[0] + "px"
+                // that.drag.style.top = that.pos[1] + "px"
+                // that.drag.style.left = that.pos[0] + "px"
+                // that.drag.style.display = 'block'
 
                 that.words = t.words
             })

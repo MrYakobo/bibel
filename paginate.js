@@ -1,4 +1,7 @@
 function paginate(txt, horizon, maxlen) {
+    function is_punctionation(s) {
+        return ".!?".split("").includes(s)
+    }
     var pages = []
     var page = []
 
@@ -9,7 +12,7 @@ function paginate(txt, horizon, maxlen) {
     for (var i = 0; i < arr.length; i++) {
         var w = arr[i]
         page.push(w)
-        if ((w.slice(-1) == "." && page.length >= maxlen - horizon) || page.length >= maxlen + horizon) {
+        if ((is_punctionation(w.slice(-1)) && page.length >= maxlen - horizon) || page.length >= maxlen + horizon) {
             pages.push(page.join(" "))
             page = []
         }
