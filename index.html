@@ -13,6 +13,9 @@
         rel="stylesheet" />
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        html,body{overflow:hidden}
+    </style>
     <title>Bibel</title>
 </head>
 
@@ -42,7 +45,7 @@
                 <span :key="words[i].reference">&nbsp;</span>
             </span>
             <transition name="apple" appear>
-                <div v-if="show" id="bg" class="center bg-black-50 bl br b--red bw2 w-960">
+                <div v-if="show" id="bg" class="center bg-near-black bl br b--red bw2 w-960">
                     <p class="dn h3-5 f6 dtc v-mid ph3 outline-0 tj ff-3" style="line-height: 1.2rem;">
                         &nbsp;
                     </p>
