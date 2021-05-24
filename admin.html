@@ -56,7 +56,12 @@
                             @click.stop.prevent="remove_at_index(wi)"></button>
                     </div>
                 </div>
-                <button class="tag button" @click="add">➕</button>
+                <div>
+                    <button class="tag button" @click="add">➕</button>
+                    <br>
+                    <button :class="['tc tag w3 ff-3 button', show ? 'is-danger':'is-success']"
+                        @click="show_hide">{{show ? "👀 showing":"🙈 hiding"}}</button>
+                </div>
             </div>
             <button class="is-small button is-info is-outlined" @click="inc">&rarr;</button>
         </div>
@@ -129,7 +134,8 @@
             words: [{
                 reference: "",
                 text: "",
-            }, ],
+            }],
+            show: true,
             show_bulk: false,
             show_import_button: false,
             is_loading: false,
@@ -243,6 +249,7 @@
                         i: this.i,
                         pos: this.pos,
                         words: this.words,
+                        show: this.show,
                     }
                     db.ref("/").set(o)
                 }, 100)()
@@ -331,6 +338,10 @@
                 // and write to cloud
                 this.write()
             },
+            show_hide() {
+                this.show = !this.show
+                this.write()
+            }
         },
         mounted() {
             addEventListener("keyup", (e) => {
