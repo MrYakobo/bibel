@@ -35,7 +35,7 @@
             </div>
             <div class="flex">
                 <input class="ff-2 w-75 tracked ph3 pv1 outline-0 bg-white ba black tl pr3" v-model="words[i].reference"
-                    placeholder="Exempel: Joh 3:16" />
+                    placeholder="Exempel: Joh 3:16" list="books" />
 
                 <button :disabled="!show_import_button"
                     :class="['w-25 button is-small', show_import_button ? 'is-success':'is-ghost', is_loading ? 'is-loading': '']"
@@ -65,6 +65,7 @@
             </div>
             <button class="is-small button is-info is-outlined" @click="inc">&rarr;</button>
         </div>
+        <datalist id="books"></datalist>
     </div>
 </body>
 <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
@@ -125,6 +126,27 @@
         }
         return str.join(" ")
     }
+
+    var abbr = ["1 Mos", "2 Mos", "3 Mos", "4 Mos", "5 Mos", "Jos", "Dom", "Rut", "1 Sam", "2 Sam", "1 Kung", "2 Kung",
+        "1 Krön", "2 Krön", "Esr", "Neh", "Est", "Job", "Ps", "Ords", "Pred", "Höga v", "Jes", "Jer", "Klag", "Hes",
+        "Dan", "Hos", "Joel", "Am", "Ob", "Jon", "Mik", "Nah", "Hab", "Sef", "Hagg", "Sak", "Mal", "Matt", "Mark",
+        "Luk", "Joh", "Apg", "Rom", "1 Kor", "2 Kor", "Gal", "Ef", "Fil", "Kol", "1 Thess", "2 Thess", "1 Tim",
+        "2 Tim", "Tit", "Filem", "Heb", "Jak", "1 Pet", "2 Pet", "1 Joh", "2 Joh", "3 Joh", "Jud", "Upp"
+    ]
+
+    var longbooks = ["Första Moseboken", "Andra Moseboken", "Tredje Moseboken", "Fjärde Moseboken", "Femte Moseboken",
+        "Josua", "Domarboken", "Rut", "Första Samuelsboken", "Andra Samuelsboken", "Första Kungaboken",
+        "Andra Kungaboken", "Första Krönikeboken", "Andra Krönikeboken", "Esra", "Nehemja", "Ester", "Job",
+        "Psaltaren", "Ordspråksboken", "Predikaren", "Höga visan", "Jesaja", "Jeremia", "Klagovisorna", "Hesekiel",
+        "Daniel", "Hosea", "Joel", "Amos", "Obadja", "Jona", "Mika", "Nahum", "Habackuk", "Sefanja", "Haggaj",
+        "Sakarja", "Malaki", "Matteusevangeliet", "Markusevangeliet", "Lukasevangeliet", "Johannesevangeliet",
+        "Apostlagärningarna", "Romarbrevet", "Första Korinthierbrevet", "Andra Korinthierbrevet", "Galaterbrevet",
+        "Efesierbrevet", "Filipperbrevet", "Kolosserbrevet", "Första Thessalonikerbrevet",
+        "Andra Thessalonikerbrevet", "Första Timotheosbrevet", "Andra Timotheosbrevet", "Titusbrevet",
+        "Filemonbrevet", "Hebreerbrevet", "Jakobsbrevet", "Första Petrusbrevet", "Andra Petrusbrevet",
+        "Första Johannesbrevet", "Andra Johannesbrevet", "Tredje Johannesbrevet", "Judasbrevet", "Uppenbarelseboken"
+    ]
+
 
     var app = new Vue({
         el: "#app",
@@ -341,9 +363,14 @@
             show_hide() {
                 this.show = !this.show
                 this.write()
+            },
+            datalist_html(lst) {
+                return lst.reduce((acc, s) => acc += "<option value='" + s + "'>", "")
             }
         },
         mounted() {
+            document.getElementById("books").innerHTML = this.datalist_html(longbooks) + this.datalist_html(
+                abbr)
             addEventListener("keyup", (e) => {
                 var inTextField = e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
                 if (e.key == "ArrowRight" && !inTextField) this.inc()
