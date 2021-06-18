@@ -162,6 +162,7 @@
             show_import_button: false,
             is_loading: false,
             drag: null,
+            error: '',
             pos3: 0,
             pos4: 0,
             inited: false,
@@ -216,7 +217,11 @@
             },
             import_button() {
                 if (this.show_import_button) return "📖 (" + this.curr_sfb + ")"
-                return "🤷"
+                var msg = "🤷"
+                if (this.error != '')
+                    msg += "(" + this.error + ")"
+
+                return msg
             },
         },
         methods: {
@@ -313,10 +318,12 @@
 
                         //add the paginated slides and remove the current slide
                         this.words.splice(this.i, 1, ...arr)
+                        this.error = ""
                         this.is_loading = false
                     })
                     .catch((s) => {
                         this.show_import_button = false
+                        this.error = s
                         this.is_loading = false
                         console.error(s)
                     })
