@@ -15,55 +15,66 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cardo&family=Varta:wght@700&family=Source+Sans+Pro:ital,wght@1,700&display=swap"
         rel="stylesheet" />
+    <style>
+        .bar {
+            border-left: 3px solid #000;
+            border-radius: 3px;
+        }
+
+        .clippath {
+            clip-path: inset(700px 0px 0px 0px)
+        }
+    </style>
 </head>
 
-<body class="bg-thirds ba">
+<body class="ba">
     <div id="app" class="pl3 pt5">
-        <div :class="['dt z-999 absolute transition', show_bulk ? '' : 'o-0 pointer-events-none']">
-            <textarea class="ba b--black-20 br2 no-resize mt2 bg-white black pa3 outline-0 ba" rows="25" cols="40"
-                v-model="bulk">
-                </textarea>
-            <br />
-            <button @click="bulk_import" class="button is-info">Bulk-import</button>
-        </div>
-        <div class="w-960 absolute z-1" id="draggable" class="ba white">
-            <div id="draggableheader" @mousedown="dragMouseDown" class="bg-dark-blue w-100 ba tc move">
-                <div class="db h1 tc w6 z-0 h1">
-                    &nbsp;
-                    <!-- control panel -->
-                </div>
-            </div>
-            <div class="flex">
-                <input class="ff-2 w-75 tracked ph3 pv1 outline-0 bg-white ba black tl pr3" v-model="words[i].reference"
-                    placeholder="Exempel: Joh 3:16" list="books" />
 
-                <button :disabled="!show_import_button"
-                    :class="['w-25 button is-small', show_import_button ? 'is-success':'is-ghost', is_loading ? 'is-loading': '']"
-                    @click="get_bible" @contextmenu.prevent @mouseup.right="toggle_sfb" tabindex="-1"
-                    title="Hämta bibelord">{{import_button}}</button>
-            </div>
-            <textarea class="ff-2 w-100 h-800 ph3 outline-0 tj lh-copy" v-model="words[i].text"></textarea>
-        </div>
-
-        <div class="absolute top-26 left-2 flex">
-            <button class="is-small button is-info is-outlined" @click="dec">&larr;</button>
-            <div class="notification flex">
-                <div class="w6 tags" v-dragdrop="words" order="order">
-                    <div :class="['tag button', wi==i ? 'is-info' : '']" @click="set_active_slide(wi)"
-                        v-for="(w, wi) in words" :key="w.reference + w.text">
-                        {{w.reference}}
-                        <button v-show="words.length > 1" class="delete is-large"
-                            @click.stop.prevent="remove_at_index(wi)"></button>
+        <div class="justify-center mb3 items-end center z-1 flex h4" id="draggable">
+            <div>
+                <div id="draggableheader" @mousedown="dragMouseDown" class=" bg-dark-blue w-100 ba tc">
+                    <div class="db h1 tc w6 z-0 h1">
+                        &nbsp;
+                        <!-- control panel -->
                     </div>
                 </div>
-                <div>
-                    <button class="tag button" @click="add">➕</button>
-                    <br>
-                    <button :class="['tc tag w3 ff-3 button', show ? 'is-danger':'is-success']"
-                        @click="show_hide">{{show ? "👀 showing":"🙈 hiding"}}</button>
+                <div class="flex">
+                    <input class="ff-2 w-75 tracked ph3 pv1 outline-0 bg-white ba black tl pr3"
+                        v-model="words[i].reference" placeholder="Exempel: Joh 3:16" list="books" />
+
+                    <button :disabled="!show_import_button"
+                        :class="['w-25 button is-small', show_import_button ? 'is-success':'is-ghost', is_loading ? 'is-loading': '']"
+                        @click="get_bible" @contextmenu.prevent @mouseup.right="toggle_sfb" tabindex="-1"
+                        title="Hämta bibelord">{{import_button}}</button>
                 </div>
+                <textarea class="ff-2 w-100 h-800 ph3 outline-0 tj lh-copy" v-model="words[i].text"></textarea>
+            </div>
+            <iframe class="dib clippath" width="1920" height="1080" src="/index.html" frameborder="0"></iframe>
+        </div>
+        <div class="flex justify-between w5 center items-stretch">
+            <button class="is-small button is-info is-outlined" @click="dec">&larr;</button>
+            <div>
+                <button :class="['tc tag w3 ff-3 button', show ? 'is-danger':'is-success']"
+                    @click="show_hide">{{show ? "👀 showing":"🙈 hiding"}}</button>
+                <button class="tag button" @click="add">➕</button>
             </div>
             <button class="is-small button is-info is-outlined" @click="inc">&rarr;</button>
+        </div>
+
+        <div class="flex">
+            <div class="notification is-white flex">
+                <div class="tags items-stretch" v-dragdrop="words" order="order">
+                    <template v-for="(w, wi) in words">
+                        <div :class="['mh1 pointer notification pa2', wi==i ? 'is-info' : '', is_in_multigroup(wi) ? 'bg-washed-yellow':'']"
+                            @click="set_active_slide(wi)" :key="w.reference + w.text">
+                            <div class="f6 i w-90">{{w.reference || "Tom bibelreferens"}}</div>
+                            <div style="font-size: .6rem;" class="tj w5" v-show="w.text">{{w.text || "&nbsp;"}}</div>
+                            <button v-show="words.length > 1" class="delete is-large"
+                                @click.stop.prevent="remove_at_index(wi)"></button>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </div>
         <datalist id="books"></datalist>
     </div>
@@ -196,6 +207,7 @@
             },
         },
         computed: {
+
             data_ready() {
                 return this.curr_reference != "" && this.curr_text != ""
             },
@@ -225,6 +237,36 @@
             },
         },
         methods: {
+            get_groups() {
+                var groups = []
+                var curr_group = []
+                for (var wi = 0; wi < this.words.length; wi++) {
+                    if (this.differs(wi)) {
+                        groups.push(curr_group)
+                        curr_group = []
+                        curr_group.push(this.words[wi])
+                    } else {
+                        curr_group.push(this.words[wi])
+                    }
+                }
+                groups.push(curr_group)
+                return groups
+            },
+            is_in_multigroup(wi) {
+                // we want to check if words[wi] is in a group whose size is > 1
+                var groups = this.get_groups()
+                if (!groups.length)
+                    return false
+                var w = this.words[wi]
+                var t = groups.find(g => g.includes(w))
+                if (t == null)
+                    return false
+
+                return t.length > 1
+            },
+            differs(wi) {
+                return wi > 1 && this.words[wi - 1].reference != this.words[wi].reference
+            },
             toggle_sfb() {
                 this.curr_sfb = {
                     sfb15: "sfb98",

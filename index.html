@@ -14,7 +14,10 @@
 
     <link rel="stylesheet" href="style.css">
     <style>
-        html,body{overflow:hidden}
+        html,
+        body {
+            overflow: hidden
+        }
     </style>
     <title>Bibel</title>
 </head>
@@ -101,7 +104,7 @@
                 var t = s.val()
                 that.i = Math.min(t.i, t.words.length - 1)
                 that.pos = t.pos
-                that.show = true
+                that.show = t.show
 
                 // that.drag.style.top = that.pos[1] + "px"
                 // that.drag.style.left = that.pos[0] + "px"

@@ -164,7 +164,8 @@ textarea {
 }
 
 .h-800 {
-    height: 200px;
+    /* height: 200px; */
+    height: 300px;
 }
 
 .top-26 {
