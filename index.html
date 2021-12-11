@@ -18,6 +18,28 @@
         body {
             overflow: hidden
         }
+
+        .center-x-1080 {
+            top: inherit;
+            left: inherit;
+            transform: inherit
+        }
+
+        html {
+            font-size: 3em;
+            color: #888;
+            margin: 0px auto;
+            overflow: hidden;
+            background: transparent !important;
+        }
+
+        .bg-white-transparent {
+            background-color: #fff
+        }
+
+        .f6.h3-5 dtc.v-mid.ph3.outline-0.tj.ff-3 {
+            background: rgba(0, 0, 0, .5) !important;
+        }
     </style>
     <title>Bibel</title>
 </head>
@@ -25,7 +47,7 @@
 <body class="ff-2">
     <div id="app" class="pa3 pt5">
         <div class="white fixed z-2 center-x-1080" id="draggable" ref="draggable">
-            <transition name="fade" appear>
+            <transition :name="!testing && 'fade'" appear>
                 <div v-if="show">
                     <span class="ff-4 f4 fw6 pl3 pr4 outline-0 bn tl dib text-shadow">
                         <span :key="words[i].reference">{{words[i].reference}}</span>
@@ -33,9 +55,11 @@
                     <div class="w-960">
                         <!-- prettier-ignore -->
                         <!-- we want the text to be based around bottom-0 -->
-                        <p class="f6 h3-5 dtc v-mid ph3 outline-0 tj ff-3" style="line-height: 1.2rem;"
-                            :key="curr_text">
-                            {{curr_text}}
+                        <p id="curr_text_p" :class="['f6 h3-5 dtc v-mid outline-0 tj ff-3', !testing ? 'ph3' : '']"
+                            style="line-height: 1.2rem;" :key="curr_text">
+                            <span id="curr_text_span">
+                                {{curr_text}}
+                            </span>
                         </p>
                     </div>
 
@@ -47,7 +71,7 @@
             <span class="ff-4 f4 fw6 pl3 pr4 outline-0 bn tl dib text-shadow">
                 <span :key="words[i].reference">&nbsp;</span>
             </span>
-            <transition name="apple" appear>
+            <transition :name="!testing && 'apple'" appear>
                 <div v-if="show" id="bg" class="center bg-near-black bl br b--red bw2 w-960">
                     <p class="dn h3-5 f6 dtc v-mid ph3 outline-0 tj ff-3" style="line-height: 1.2rem;">
                         &nbsp;
@@ -79,6 +103,7 @@
         el: "#app",
         data: {
             debug: location.search == "?debug",
+            testing: location.search == "?testing",
             i: 0,
             pos: [0, 0],
             words: [{
@@ -99,19 +124,21 @@
                 document.body.classList.add("bg-sara")
             }
             this.drag = this.$refs["draggable"]
-            var that = this
-            db.ref("/").on("value", function (s) {
-                var t = s.val()
-                that.i = Math.min(t.i, t.words.length - 1)
-                that.pos = t.pos
-                that.show = t.show
+            if (!this.testing) {
+                var that = this
+                db.ref("/").on("value", function (s) {
+                    var t = s.val()
+                    that.i = Math.min(t.i, t.words.length - 1)
+                    that.pos = t.pos
+                    that.show = t.show
 
-                // that.drag.style.top = that.pos[1] + "px"
-                // that.drag.style.left = that.pos[0] + "px"
-                // that.drag.style.display = 'block'
+                    // that.drag.style.top = that.pos[1] + "px"
+                    // that.drag.style.left = that.pos[0] + "px"
+                    // that.drag.style.display = 'block'
 
-                that.words = t.words
-            })
+                    that.words = t.words
+                })
+            }
         },
     })
 </script>
