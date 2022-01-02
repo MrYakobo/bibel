@@ -1,0 +1,29 @@
+name: Deploy to GitHub pages
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate site
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+    - run: npm ci && npm run build
+
+    - name: Init new repo in dist folder and commit generated files
+      run: |
+        cd dist
+        git init
+        git add -A
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m 'deploy'
+        git branch -m gh-pages
+
+    - name: Force push to destination branch
+      run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push origin gh-pages --force
