@@ -26,3 +26,5 @@ function paginate(txt, horizon, maxlen) {
     //no empty slides plz
     return pages.filter((s) => s.trim() != "")
 }
+
+export default paginate
