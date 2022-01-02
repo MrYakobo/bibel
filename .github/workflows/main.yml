@@ -16,6 +16,7 @@ jobs:
     - name: Init new repo in dist folder and commit generated files
       run: |
         cd dist
+        echo "bibel.lind.sk" > CNAME
         git init
         git add -A
         git config --local user.email "action@github.com"
