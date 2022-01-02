@@ -25,5 +25,6 @@ jobs:
 
     - name: Force push to destination branch
       run: |
+          cd dist
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git push origin gh-pages --force
