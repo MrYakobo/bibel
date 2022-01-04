@@ -107,8 +107,8 @@ export default {
                     text: "Add slide",
                     action: this.add_new_empty_word_and_scroll,
                 },
-                "s": {
-                    label: "s",
+                "h": {
+                    label: "h",
                     text: "Show / Hide",
                     action: this.show_hide,
                 },

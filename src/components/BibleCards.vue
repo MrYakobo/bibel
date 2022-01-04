@@ -1,17 +1,19 @@
 <template>
     <div class="h-screen p-5">
-        <div v-if="words.length == 0">
-            Här vart det tomt. Lägg in lite bibelord :)
-        </div>
         <div
-            v-else
             :class="[
-                'h-11/12 overflow-y-scroll relative shadow',
+                'h-11/12 overflow-y-scroll relative shadow bg-gray-100 p-3 rounded-md',
                 { 'opacity-70': !show },
             ]"
         >
-            <draggable handle=".handle" v-model="words" @change="change">
-                <transition-group name="list" class="flex flex-col mx-6">
+            <p
+                v-if="words.length == 0"
+                class="text-gray-500 my-5 w-128 mx-6 text-center text-xl"
+            >
+                Lägg till bibelord med plusknappen eller bibelimporten
+            </p>
+            <draggable v-else handle=".handle" v-model="words" @change="change">
+                <transition-group name="list" class="w-128 flex flex-col mx-6">
                     <BibleCard
                         v-for="(w, wi) in words"
                         :ref="w.id"
@@ -29,7 +31,7 @@
                 </transition-group>
             </draggable>
         </div>
-        <div class="flex justify-center items-center px-4">
+        <div class="mt-2 flex justify-center items-center px-4">
             <button
                 class="
                     w-6/12

@@ -131,8 +131,13 @@ function versetxt_to_lst(txt) {
     if (parts.length == 1 || parts[1] == "")
         return parts
 
-    let [lo, hi] = parts.map(a => parseInt(a))
-    return range(lo, hi)
+    try {
+        let [lo, hi] = parts.map(a => parseInt(a))
+        return range(lo, hi)
+    }
+    catch (e) {
+        // parseint error or RangeError, it's cool man
+    }
 }
 
 const PAGINATE_HORIZON = 8

@@ -1,7 +1,7 @@
 <template>
     <div class="h-40 relative w-128 handle" @click="$emit('click')">
         <h1 class="italic text-lg font-bold">
-            {{ reference || "Tom referens" }}
+            {{ reference || "Tomt kort" }}
         </h1>
         <p class="text-sm">{{ text || "&nbsp;" }}</p>
         <button
@@ -26,7 +26,6 @@
         </button>
         <button
             @click.stop="$emit('delete')"
-            v-show="words.length > 1"
             class="
                 absolute
                 font-thin

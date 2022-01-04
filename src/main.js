@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import 'virtual:windi.css'
 import Vuex from 'vuex'
+import pick from 'lodash.pick'
 
 Vue.use(Vuex)
 
@@ -125,10 +126,11 @@ const store = new Vuex.Store({
             this.commit('write')
         },
         remove_word_at_index(state, wi) {
-            if (state.words.length > 1) {
-                state.words.splice(wi, 1)
-                state.i = Math.min(Math.max(state.i - 1, 0), state.words.length - 1)
-            }
+            state.words.splice(wi, 1)
+            // decrement if active is over, else it's ok
+            if (wi < state.i)
+                state.i = Math.min(state.i + 1, state.words.length - 1)
+
             this.commit('write')
         },
         add_new_word(state, obj) {
