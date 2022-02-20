@@ -13,7 +13,7 @@
                 <BibleEntry class="w-full shadow-md p-6 my-6" />
                 <div class="zoom-50 bg-gray-500 rounded-lg py-10 mt-auto mb-8">
                     <div class="w-fhd h-64">
-                        <DispCard class="w-9/12 h-64 my-auto mx-auto" />
+                        <DispCard class="w-9/12 h-64 my-auto ml-64" />
                     </div>
                 </div>
             </div>
@@ -210,6 +210,7 @@ export default {
                         this.set_i(curr_i)
                     } catch (e) {
                         // some error with data format, just ignore it
+                        console.log("some error with data format")
                         console.error(e)
                     }
 
