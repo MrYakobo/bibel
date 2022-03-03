@@ -13,7 +13,8 @@ module.exports = {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        display: resolve(__dirname, 'display/index.html')
+        display: resolve(__dirname, 'display/index.html'),
+        fullscreen: resolve(__dirname, 'fullscreen/index.html')
       }
     }
   }

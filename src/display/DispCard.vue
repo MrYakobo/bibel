@@ -2,8 +2,9 @@
     <transition name="shrink">
         <div
             class="
-                h-full
+                h-64
                 my-auto
+                mx-auto
                 rounded
                 text-3xl text-black
                 font-bold
@@ -11,16 +12,38 @@
                 px-1
                 py-2
                 shadow-2xl
+                dark:shadow-none
                 overflow-hidden
+                dark:bg-transparent dark:text-white dark:text-4xl dark:h-auto
             "
             v-show="show"
         >
-            <div class="h-full border-l-8 border-red-800 px-4 py-2 rounded">
+            <div
+                class="
+                    h-full
+                    border-l-8 border-red-800
+                    dark:border-transparent
+                    px-4
+                    py-2
+                    rounded
+                "
+            >
                 <div v-if="curr_slide">
-                    <p class="text-4xl text-red-900 mb-4 font-bold">
+                    <p
+                        class="
+                            text-4xl text-red-900
+                            dark:text-blue-500
+                            dark:uppercase
+                            dark:tracking-widest
+                            dark:text-5xl
+                            dark:leading-loose
+                            mb-4
+                            font-bold
+                        "
+                    >
                         {{ curr_slide.reference }}
                     </p>
-                    <p class="leading-normal">
+                    <p class="leading-normal dark:px-7">
                         {{ curr_slide.text }}
                     </p>
                 </div>

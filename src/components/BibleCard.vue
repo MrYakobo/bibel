@@ -1,7 +1,7 @@
 <template>
     <div class="h-40 relative w-128 handle" @click="$emit('click')">
         <h1 class="italic text-lg font-bold">
-            {{ reference || "Tomt kort" }}
+            {{ reference || (text && "&nbsp;") || "Tomt kort" }}
         </h1>
         <p class="text-sm">{{ text || "&nbsp;" }}</p>
         <button

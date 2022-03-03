@@ -98,6 +98,11 @@ export default {
     },
     mounted() {
         this.$refs.reference_input.focus()
+        window.addEventListener("keydown", e => {
+            if (e.key == "Escape") {
+                this.set_show_modal(false)
+            }
+        })
     }
 }
 </script>

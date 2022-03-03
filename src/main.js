@@ -2,7 +2,6 @@ import Vue from 'vue';
 import App from './App.vue';
 import 'virtual:windi.css'
 import Vuex from 'vuex'
-import pick from 'lodash.pick'
 
 Vue.use(Vuex)
 
@@ -15,11 +14,12 @@ const store = new Vuex.Store({
         inited: false,
         bibles: {
             sfb98: {},
-            sfb15: {}
+            sfb15: {},
+            b2000: {}
         },
         show_modal: false,
         edit_slide: {},
-        selected_translation: "sfb98",
+        selected_translation: "b2000",
         base: import.meta.env.VITE_API_URL
     },
     getters: {
@@ -125,11 +125,35 @@ const store = new Vuex.Store({
             state.show = !state.show
             this.commit('write')
         },
-        remove_word_at_index(state, wi) {
-            state.words.splice(wi, 1)
-            // decrement if active is over, else it's ok
-            if (wi < state.i)
+        remove_word_at_index(state, di) {
+            state.words.splice(di, 1)
+            /*
+            decrement i if i is after the deletion
+                Example di < i. i = 1, di = 3 
+                [foo, curr, bar, to_delete] => [foo, curr, bar]
+                [0, 1, 2, 3] => [0, 1, 2]
+                curr^           curr^
+
+                Example di > i. i = 3, di = 1
+                [foo, to_delete, bar, curr] ==> [foo, bar, curr]
+                [0, 1, 2, 3] => [0, 1, 2]
+                      curr^        curr^
+
+                Example di = i. i = 1, di = 1
+                [foo, to_delete/curr, bar] ==> [foo, curr]
+                [0, 1, 2] => [0, 1]
+                curr^        curr^
+            */
+
+            if (di < state.i)
                 state.i = Math.min(state.i + 1, state.words.length - 1)
+
+            let maxvalue = state.words.length - 1
+            let value = state.i
+            let minvalue = 0
+
+            let clamped = Math.min(Math.max(value, minvalue), maxvalue)
+            state.i = clamped
 
             this.commit('write')
         },

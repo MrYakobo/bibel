@@ -183,7 +183,14 @@ export default {
             if (this.selected_chapter == "")
                 return ""
             // show range for the verse input field
-            let verses = this.bibledb[this.selected_book][this.selected_chapter]
+            let t = this.bibledb[this.selected_book]
+            if (t == null)
+                return ""
+
+            let verses = t[this.selected_chapter]
+            if (verses == null)
+                return ""
+
             return `1-${Object.keys(verses).length}`
         },
         bible_text() {
@@ -220,12 +227,6 @@ export default {
             this.add_bible_slides(slides)
             this.reset_form()
         },
-        toggle_sfb() {
-            this.curr_sfb = {
-                sfb15: "sfb98",
-                sfb98: "sfb15"
-            }[this.curr_sfb]
-        },
         split_bible_slides(original_ref, original_text) {
             var arr = paginate(original_text, PAGINATE_HORIZON, PAGINATE_MAXLEN)
             return arr.map((s, i) => {
@@ -235,32 +236,6 @@ export default {
                 }
                 return o
             })
-        },
-        get_bible() {
-            var ref = this.curr_reference
-            var url = "https://sfb.lind.sk/" + titleCase(ref) + "?" + this.curr_sfb
-            console.log(url)
-            this.is_loading = true
-            axios
-                .get(url)
-                .then((s) => {
-                    //remove empty slides
-                    var arr = this.split_bible_slides(ref, s.data)
-                    // console.log(arr)
-                    // console.log(s.data)
-                    // console.log(arr.map((s) => s.text).join(" "))
-
-                    //add the paginated slides and remove the current slide
-                    this.words.splice(this.i, 1, ...arr)
-                    this.error = ""
-                    this.is_loading = false
-                })
-                .catch((s) => {
-                    this.show_import_button = false
-                    this.error = s
-                    this.is_loading = false
-                    console.error(s)
-                })
         },
     }
 }

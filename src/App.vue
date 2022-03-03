@@ -147,7 +147,7 @@ export default {
         scroll_into_view(id) {
             this.$nextTick(() => {
                 let refs = this.$children.map(a => a.$refs).find(a => Object.keys(a).length > 0)
-                console.log(refs, id, refs[id])
+                // console.log(refs, id, refs[id])
                 let ref = refs[id][0]
                 ref.$el.scrollIntoViewIfNeeded(false)
             })
@@ -162,8 +162,8 @@ export default {
         ...mapGetters(['curr_slide'])
     },
     mounted() {
-        document.onkeyup = (e) => {
-            let inTextField = e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
+        document.onkeydown = (e) => {
+            let inTextField = e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA" || e.target.tagName == "SELECT"
             if (inTextField)
                 return
 
@@ -176,17 +176,17 @@ export default {
                 return
 
             func()
+            e.preventDefault()
 
             if (e.key.includes("Arrow")) {
                 // disable scrolling with arrow keys
-                e.preventDefault()
                 return false
             }
         }
 
         let promises = []
 
-        let translations = ["sfb15", "sfb98"]
+        let translations = ["sfb15", "sfb98", "b2000"]
         let base = this.base
 
         for (let translation of translations) {
