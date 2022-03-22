@@ -19,7 +19,7 @@ const store = new Vuex.Store({
         },
         show_modal: false,
         edit_slide: {},
-        selected_translation: "b2000",
+        selected_translation: "sfb15",
         base: import.meta.env.VITE_API_URL
     },
     getters: {
