@@ -5,6 +5,13 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+function make_form_data(data, field_id, filename) {
+    var form_data = new FormData();
+    const blob = new Blob([data], { type: 'text/plain' })
+    form_data.append(field_id, blob, filename);
+    return form_data
+}
+
 const store = new Vuex.Store({
     state: {
         words: [],
@@ -91,12 +98,9 @@ const store = new Vuex.Store({
                 show
             }
             promises.push(
-                fetch(`${state.base}/slide.json`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(obj)
+                fetch(`${state.base}`, {
+                    method: 'POST',
+                    body: make_form_data(JSON.stringify(obj), "f", "slide.json")
                 })
             )
             obj = {
@@ -104,12 +108,9 @@ const store = new Vuex.Store({
                 show: state.show
             }
             promises.push(
-                fetch(`${state.base}/bibel.json`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(obj)
+                fetch(`${state.base}`, {
+                    method: 'POST',
+                    body: make_form_data(JSON.stringify(obj), "f", "bibel.json")
                 })
             )
             Promise.all(promises)
