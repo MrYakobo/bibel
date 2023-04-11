@@ -27,7 +27,10 @@ const store = new Vuex.Store({
         show_modal: false,
         edit_slide: {},
         selected_translation: "sfb15",
-        base: import.meta.env.VITE_API_URL
+        base: import.meta.env.VITE_API_URL,
+        write_ping: null,
+        read_ping: null,
+        is_writing: false
     },
     getters: {
         longbooks(state, getters) {
@@ -88,33 +91,37 @@ const store = new Vuex.Store({
             if (!state.inited)
                 return
 
+            let start = window.performance.now()
+
             let slide = state.words[state.i]
             let show = state.show
+            let words = state.words
 
             let promises = []
 
-            var obj = {
-                slide,
-                show
-            }
+            state.is_writing = true
+
             promises.push(
                 fetch(`${state.base}`, {
                     method: 'POST',
-                    body: make_form_data(JSON.stringify(obj), "f", "slide.json")
+                    body: make_form_data(JSON.stringify({ slide, show }), "f", "slide.json")
                 })
             )
-            obj = {
-                words: state.words,
-                show: state.show
-            }
             promises.push(
                 fetch(`${state.base}`, {
                     method: 'POST',
-                    body: make_form_data(JSON.stringify(obj), "f", "bibel.json")
+                    body: make_form_data(JSON.stringify({ words, show }), "f", "bibel.json")
                 })
             )
-            Promise.all(promises)
-            console.log('writing')
+            Promise.all(promises).then(() => {
+                let end = window.performance.now()
+                let time = end - start
+                state.write_ping = time
+                state.is_writing = false
+            })
+        },
+        set_read_ping(state, time) {
+            state.read_ping = time
         },
         inc(state) {
             this.commit('set_i', Math.min(state.i + 1, state.words.length - 1))

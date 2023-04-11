@@ -28,7 +28,7 @@
                     rounded
                 "
             >
-                <div v-if="curr_slide">
+                <div v-show="curr_slide">
                     <p
                         class="
                             text-4xl text-red-900
@@ -94,6 +94,7 @@
 }
 </style>
 <script>
+import {mapMutations, mapState} from 'vuex'
 export default {
     name: 'DispCard',
     data() {
@@ -106,18 +107,43 @@ export default {
             show: false
         }
     },
+    computed: {
+        ...mapState(["is_writing"])
+    },
     methods: {
         update_loop() {
+            if (this.is_writing) {
+                // wait until writing is done
+                console.log("writing, skipping reading this round...")
+                setTimeout(this.update_loop, 100)
+                return
+            }
+
             let base = import.meta.env.VITE_API_URL
-            fetch(`${base}/slide.json`).then(a => a.json()).then(a => {
-                this.curr_slide = a.slide
-                this.show = a.show
+            let start = window.performance.now()
+
+            fetch(`${base}/slide.json`).then(a=>a.text()).then(text=>{
+                let json = null
+                try {
+                    json = JSON.parse(text)
+                }
+                catch(e) {
+                    console.error(e)
+                    console.error(text)
+                }
+
+                this.curr_slide = json.slide
+                this.show = json.show
             }).catch(e => {
-                console.log(e)
+                console.error(e)
             }).finally(() => {
-                setTimeout(this.update_loop, 500)
+                let end = window.performance.now()
+                let time = end - start
+                this.set_read_ping(time)
+                setTimeout(this.update_loop, 100)
             })
-        }
+        },
+        ...mapMutations(["set_read_ping"])
     },
     mounted() {
         this.update_loop()
