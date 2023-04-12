@@ -232,8 +232,8 @@ const store = new Vuex.Store({
             let minvalue = 0
 
             let clamped = Math.min(Math.max(value, minvalue), maxvalue)
-            state.i = clamped
 
+            this.commit('set_i', clamped)
             this.commit('write_words')
             this.commit('write')
         },
