@@ -91,6 +91,12 @@ const store = new Vuex.Store({
             if (!state.inited)
                 return
 
+            if (state.is_writing) {
+                console.log("is already writing, trying again in 50ms...")
+                setTimeout(this.write, 50)
+                return
+            }
+
             let start = window.performance.now()
 
             let slide = state.words[state.i]
