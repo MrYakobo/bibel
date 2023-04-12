@@ -94,21 +94,12 @@
 }
 </style>
 <script>
-import {mapMutations, mapState} from 'vuex'
+import {mapMutations, mapState, mapGetters} from 'vuex'
 export default {
     name: 'DispCard',
-    data() {
-        return {
-            curr_slide: {
-                reference: "",
-                text: "",
-                id: ""
-            },
-            show: false
-        }
-    },
     computed: {
-        ...mapState(["is_writing"])
+        ...mapState(["is_writing", "show"]),
+        ...mapGetters(["curr_slide"])
     },
     methods: {
         update_loop() {
@@ -120,28 +111,6 @@ export default {
             }
 
             let base = import.meta.env.VITE_API_URL
-            let start = window.performance.now()
-
-            fetch(`${base}/slide.json`).then(a=>a.text()).then(text=>{
-                let json = null
-                try {
-                    json = JSON.parse(text)
-                }
-                catch(e) {
-                    console.error(e)
-                    console.error(text)
-                }
-
-                this.curr_slide = json.slide
-                this.show = json.show
-            }).catch(e => {
-                console.error(e)
-            }).finally(() => {
-                let end = window.performance.now()
-                let time = end - start
-                this.set_read_ping(time)
-                setTimeout(this.update_loop, 100)
-            })
         },
         ...mapMutations(["set_read_ping"])
     },
