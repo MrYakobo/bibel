@@ -134,7 +134,8 @@ export default {
             'show_hide',
             'edit_curr_slide',
             'set_show_modal',
-            'edit_slide'
+            'edit_slide',
+            'init_state'
         ]),
         add_new_empty_word_and_scroll() {
             this.add_new_empty_word()
@@ -159,7 +160,7 @@ export default {
     },
     computed: {
         ...mapState(['show_modal', 'counter_id', 'words', 'inited', 'base']),
-        ...mapGetters(['curr_slide'])
+        ...mapGetters(['curr_slide']),
     },
     mounted() {
         document.onkeydown = (e) => {
@@ -196,32 +197,8 @@ export default {
             })
             promises.push(promise)
         }
-        // this is used as the store for configured words, not the current slide
-        promises.push(
-            fetch(`${base}/bibel.json`).then(a => a.json()).then(t => {
-                this.set_words(t.words || [])
-                this.set_show(t.show ?? true) // if null, default to true
 
-                // we need to fetch the current slide to set i correctly
-                fetch(`${base}/slide.json`).then(a => a.json()).then(a => {
-                    try {
-                        let curr_slide = a.slide
-                        let curr_i = t.words.findIndex(w => w.id == curr_slide.id)
-                        this.set_i(curr_i)
-                    } catch (e) {
-                        // some error with data format, just ignore it
-                        console.log("some error with data format")
-                        console.error(e)
-                    }
-
-                }).catch(e =>
-                    console.error(e)
-                )
-            }).catch(e =>
-                console.error(e)
-            )
-        )
-
+        this.init_state()
         Promise.all(promises).finally(() => {
             console.log('inited all promises')
             this.set_inited(true)

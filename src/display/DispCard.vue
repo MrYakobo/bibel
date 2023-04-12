@@ -98,24 +98,14 @@ import {mapMutations, mapState, mapGetters} from 'vuex'
 export default {
     name: 'DispCard',
     computed: {
-        ...mapState(["is_writing", "show"]),
+        ...mapState(["show"]),
         ...mapGetters(["curr_slide"])
     },
     methods: {
-        update_loop() {
-            if (this.is_writing) {
-                // wait until writing is done
-                console.log("writing, skipping reading this round...")
-                setTimeout(this.update_loop, 100)
-                return
-            }
-
-            let base = import.meta.env.VITE_API_URL
-        },
-        ...mapMutations(["set_read_ping"])
+        ...mapMutations(["init_state"]),
     },
     mounted() {
-        this.update_loop()
+        this.init_state()
     }
 }
 </script>

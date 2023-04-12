@@ -65,6 +65,31 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
+        init_state(state) {
+            // this is used as the store for configured words, not the current slide
+            fetch(`${state.base}/bibel.json`).then(a => a.json()).then(t => {
+                this.commit('set_words_without_write', t.words || [])
+                this.commit('set_show_without_write', t.show ?? true) // if null, default to true
+
+                // we need to fetch the current slide to set i correctly
+                fetch(`${state.base}/slide.json`).then(a => a.json()).then(a => {
+                    try {
+                        let curr_slide = a.slide
+                        let curr_i = t.words.findIndex(w => w.id == curr_slide.id)
+                        this.commit('set_i_without_write', curr_i)
+                    } catch (e) {
+                        // some error with data format, just ignore it
+                        console.log("some error with data format")
+                        console.error(e)
+                    }
+
+                }).catch(e =>
+                    console.error(e)
+                )
+            }).catch(e =>
+                console.error(e)
+            )
+        },
         edit_slide(state, slide) {
             this.commit('set_edit_slide', slide)
             this.commit('set_show_modal', true)
@@ -187,12 +212,12 @@ const store = new Vuex.Store({
                 [foo, curr, bar, to_delete] => [foo, curr, bar]
                 [0, 1, 2, 3] => [0, 1, 2]
                 curr^           curr^
-
+    
                 Example di > i. i = 3, di = 1
                 [foo, to_delete, bar, curr] ==> [foo, bar, curr]
                 [0, 1, 2, 3] => [0, 1, 2]
                       curr^        curr^
-
+    
                 Example di = i. i = 1, di = 1
                 [foo, to_delete/curr, bar] ==> [foo, curr]
                 [0, 1, 2] => [0, 1]
