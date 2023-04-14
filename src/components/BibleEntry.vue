@@ -140,8 +140,7 @@ function versetxt_to_lst(txt) {
     }
 }
 
-const PAGINATE_HORIZON = 8
-const PAGINATE_MAXLEN = 55
+const PAGINATE_MAXLEN = 310
 
 export default {
     name: 'BibleEntry',
@@ -228,7 +227,7 @@ export default {
             this.reset_form()
         },
         split_bible_slides(original_ref, original_text) {
-            var arr = paginate(original_text, PAGINATE_HORIZON, PAGINATE_MAXLEN)
+            var arr = paginate(original_text, PAGINATE_MAXLEN)
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,

@@ -1,30 +1,29 @@
-function paginate(txt, horizon, maxlen) {
-    function is_punctionation(s) {
-        return ".!?".split("").includes(s)
-    }
-    var pages = []
-    var page = []
+function paginate(longText, maxChunkSize) {
+    // https://stackoverflow.com/a/18915014/4898830
+    let sentences = longText.replace(/(\.+|\!|\?)(\"*|\'*|\)*|}*|]*)(\s|\n|\r|\r\n)/gm, "$1$2|").split("|")
+    let chunk = ""
+    let chunks = []
 
-    var arr = txt.split(" ")
-
-    if (arr.length < maxlen) return [txt]
-
-    for (var i = 0; i < arr.length; i++) {
-        var w = arr[i]
-        page.push(w)
-        if ((is_punctionation(w.slice(-1)) && page.length >= maxlen - horizon) || page.length >= maxlen + horizon) {
-            pages.push(page.join(" "))
-            page = []
+    for (const sentence of sentences) {
+        // we don't want to create a chunk that is too long
+        // if we are already mogen, accept it
+        let chunk_is_mogen = chunk.length + sentence.length + 1 >= maxChunkSize
+        if (chunk_is_mogen && chunk.length > 0) {
+            chunks.push(chunk)
+            chunk = ""
+            continue
         }
+
+        // we are not mogen. build on the chunk
+        chunk = chunk + sentence + " "
     }
 
-    // if we have one last chunk left, push that
-    if (page.length > 0) {
-        pages.push(page.join(" "))
+    // make sure we push the last one as well, if it exists
+    if (chunk.length > 0) {
+        chunks.push(chunk)
     }
 
-    //no empty slides plz
-    return pages.filter((s) => s.trim() != "")
+    return chunks
 }
 
 export default paginate
