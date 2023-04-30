@@ -140,7 +140,7 @@ function versetxt_to_lst(txt) {
     }
 }
 
-const PAGINATE_MAXLEN = 310
+const PAGINATE_MAXLEN = 280
 
 export default {
     name: 'BibleEntry',
