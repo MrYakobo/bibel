@@ -28,7 +28,7 @@
                     rounded
                 "
             >
-                <div v-show="curr_slide">
+                <div v-if="curr_slide">
                     <p
                         class="
                             text-4xl text-red-900
