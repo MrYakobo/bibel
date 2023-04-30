@@ -90,9 +90,10 @@ export default {
         ...mapState(['edit_slide'])
     },
     methods: {
-        ...mapMutations(['set_show_modal', 'write']),
+        ...mapMutations(['set_show_modal', 'write', 'write_words']),
         close() {
             this.set_show_modal(false)
+            this.write_words()
             this.write()
         }
     },

@@ -136,7 +136,8 @@ const store = new Vuex.Store({
         },
         set_i(state, i) {
             state.i = i
-            this.commit('write_i')
+            // why not write everything to channel while we're at it
+            write(channel, {i: i, show: state.show, words: state.words})
             this.commit("write")
         },
         write_i(state) {
