@@ -1,5 +1,6 @@
 <template>
     <div class="">
+        <DispCard id="hidden_dispcard" class="opacity-0 absolute pointer-events-none" />
         <div class="flex my-4 justify-center items-end text-xl">
             <div class="mx-1">
                 <p>Version</p>
@@ -111,7 +112,8 @@
 <script>
 import { mapGetters, mapState, mapMutations } from 'vuex'
 import pick from 'lodash.pick'
-import paginate from '../paginate'
+import {paginate, paginate_new} from '../paginate'
+import DispCard from '../display/DispCard.vue'
 
 function titleCase(str) {
     str = str.toLowerCase().split(" ")
@@ -227,7 +229,7 @@ export default {
             this.reset_form()
         },
         split_bible_slides(original_ref, original_text) {
-            var arr = paginate(original_text, PAGINATE_MAXLEN)
+            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide", "#hidden_dispcard #curr_slide_text")
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,
@@ -236,6 +238,7 @@ export default {
                 return o
             })
         },
-    }
+    },
+    components: { DispCard }
 }
 </script>

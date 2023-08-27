@@ -61,7 +61,7 @@ const store = new Vuex.Store({
             return Object.keys(state.bibles)
         },
         curr_slide(state) {
-            return state.words[state.i]
+            return state.words[state.i] || { reference: "(ingen referens)", text: "(ingen text)" }
         }
     },
     mutations: {

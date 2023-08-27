@@ -10,10 +10,9 @@
                 font-bold
                 bg-white
                 px-1
-                py-2
                 shadow-2xl
+                overflow-auto
                 dark:shadow-none
-                overflow-hidden
                 dark:bg-transparent dark:text-white dark:text-4xl dark:h-auto
             "
             v-show="show"
@@ -28,7 +27,7 @@
                     rounded
                 "
             >
-                <div v-if="curr_slide">
+                <div id="curr_slide" class="overflow-auto h-full">
                     <p
                         class="
                             text-4xl text-red-900
@@ -43,7 +42,7 @@
                     >
                         {{ curr_slide.reference }}
                     </p>
-                    <p class="leading-normal dark:px-7">
+                    <p class="leading-normal dark:px-7" id="curr_slide_text">
                         {{ curr_slide.text }}
                     </p>
                 </div>
