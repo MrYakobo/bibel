@@ -14,7 +14,8 @@ function paginate_new(longtext, hidden_container_selector, paragraph_selector) {
     // we're taking both the container selector and the paragraph selector.
     // the container is checked for overflow, the paragraph is used for setting the text
 
-    let sentences = longtext.replace(/(\.+|\!|\?|,|:)(\"*|\'*|\)*|}*|]*|”*)(\s|\n|\r|\r\n)/gm, "$1$2|").split("|")
+    // let sentences = longtext.replace(/(\.+|\!|\?|,|:)(\"*|\'*|\)*|}*|]*|”*)(\s|\n|\r|\r\n)/gm, "$1$2|").split("|")
+    let sentences = longtext.split(" ")
     let chunk = ""
     let chunks = []
 
