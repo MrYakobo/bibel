@@ -1,110 +1,82 @@
 <template>
-    <transition name="shrink">
-        <div
-            class="
-                h-64
-                my-auto
-                mx-auto
-                rounded
-                text-3xl text-black
-                font-bold
-                bg-white
-                px-1
-                shadow-2xl
-                overflow-auto
-                dark:shadow-none
-                dark:bg-transparent dark:text-white dark:text-4xl dark:h-auto
-            "
-            v-show="show"
-        >
+  <transition name="shrink">
+    <!-- Grafik runtomkring osv -->
+    <div
+      class="font-nice w-[47rem] h-[23rem] my-auto mx-auto text-3xl text-white bg-contain bg-center bg-bare-black dark:shadow-none dark:bg-transparent dark:text-white dark:text-4xl dark:h-auto"
+      v-show="show" 
+    >
+      <div class="h-[23rem] dark:border-transparent overflow-auto">
+        <!-- här e själva text-grejen -->
+          <p
+            class="my-5 text-4xl text-center dark:text-blue-500 dark:uppercase dark:tracking-widest dark:text-5xl dark:leading-loose mb-4 font-bold"
+          >
+            {{ curr_slide.reference }}
+          </p>
             <div
-                class="
-                    h-full
-                    border-l-8 border-red-800
-                    dark:border-transparent
-                    px-4
-                    py-2
-                    rounded
-                "
+              class="leading-[1.1] px-10 pt-5 pb-3 font-semibold dark:px-7 text-[40px] h-[15rem] overflow-auto text-center"
+              id="curr_slide"
             >
-                <div id="curr_slide" class="overflow-auto h-full">
-                    <p
-                        class="
-                            text-4xl text-red-900
-                            dark:text-blue-500
-                            dark:uppercase
-                            dark:tracking-widest
-                            dark:text-5xl
-                            dark:leading-loose
-                            mb-4
-                            font-bold
-                        "
-                    >
-                        {{ curr_slide.reference }}
-                    </p>
-                    <p class="leading-normal dark:px-7" id="curr_slide_text">
-                        {{ curr_slide.text }}
-                    </p>
-                </div>
+              <p id="curr_slide_text" class="h-full flex justify-center items-center hyphens-auto">
+                {{ curr_slide.text }}
+              </p>
             </div>
-        </div>
-    </transition>
+      </div>
+    </div>
+  </transition>
 </template>
 <style>
-@keyframes showtext {
-    0% {
-        /* max-width: 0; */
-        /* letter-spacing: -15px; */
-        /* filter: blur(100px); */
-        opacity: 0;
-    }
-    100% {
-        /* max-width: calc(1920px * 0.75); */
-        /* letter-spacing: 0px; */
-        /* transform: none; */
-        opacity: 1;
-    }
+.font-nice {
+  font-family: "Inter", serif;
 }
-
-/* @keyframes showtext {
-    0% {
-        clip-path: path(
-            "M0 -0.12C8.33 -8.46 16.67 -12.62 25 -12.62C37.5 -12.62 35.91 0.15 50 -0.12C64.09 -0.4 62.5 -34.5 75 -34.5C87.5 -34.5 87.17 -4.45 100 -0.12C112.83 4.2 112.71 -17.95 125 -18.28C137.29 -18.62 137.76 1.54 150.48 -0.12C163.19 -1.79 162.16 -25.12 174.54 -25.12C182.79 -25.12 191.28 -16.79 200 -0.12L200 -34.37L0 -34.37L0 -0.12Z"
-        );
-    }
-    100% {
-        clip-path: path(
-            "M0 199.88C8.33 270.71 16.67 306.13 25 306.13C37.5 306.13 35.91 231.4 50 231.13C64.09 230.85 62.5 284.25 75 284.25C87.5 284.25 87.17 208.05 100 212.38C112.83 216.7 112.71 300.8 125 300.47C137.29 300.13 137.76 239.04 150.48 237.38C163.19 235.71 162.16 293.63 174.54 293.63C182.79 293.63 191.28 262.38 200 199.88L200 0.13L0 0.13L0 199.88Z"
-        );
-    }
-} */
+.bg-bare {
+  background-image: url("/src/img/Bare Yellow.png");
+  color: #885914 !important;
+}
+.bg-bare-black {
+  background-image: url("/src/img/Bare.png");
+  color: #fff !important;
+}
+@keyframes showtext {
+  0% {
+    /* max-width: 0; */
+    /* letter-spacing: -15px; */
+    /* filter: blur(100px); */
+    opacity: 0;
+  }
+  100% {
+    /* max-width: calc(1920px * 0.75); */
+    /* letter-spacing: 0px; */
+    /* transform: none; */
+    opacity: 1;
+  }
+}
 
 .shrink-enter-active {
-    animation-name: showtext;
-    animation-duration: 0.7s;
-    animation-timing-function: ease;
+  animation-name: showtext;
+  animation-duration: 0.7s;
+  animation-timing-function: ease;
 }
 .shrink-leave-active {
-    animation-name: showtext;
-    animation-duration: 1s;
-    animation-timing-function: ease;
-    animation-direction: reverse;
-    /* animation-delay: 0.1s; */
+  animation-name: showtext;
+  animation-duration: 1s;
+  animation-timing-function: ease;
+  animation-direction: reverse;
 }
 </style>
 <script>
-import {mapMutations, mapState, mapGetters} from 'vuex'
+import { mapMutations, mapState, mapGetters } from "vuex";
+
 export default {
-    name: 'DispCard',
-    computed: {
-        ...mapState(["show"]),
-        ...mapGetters(["curr_slide"])
-    },
-    methods: {
-        ...mapMutations(["init_state"]),
-    },
-    mounted() {
-        this.init_state()
-    }
-}
+  name: "DispCard",
+  computed: {
+    ...mapState(["show"]),
+    ...mapGetters(["curr_slide"]),
+  },
+  methods: {
+    ...mapMutations(["init_state"]),
+  },
+  mounted() {
+    this.init_state();
+  },
+};
 </script>

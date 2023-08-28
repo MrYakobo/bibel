@@ -11,25 +11,35 @@ function is_overflowing(container_selector, paragraph_selector, text) {
 
 function paginate_new(longtext, hidden_container_selector, paragraph_selector) {
     // to be used with an hidden element, that has the same styling as the main container
+    // we're taking both the container selector and the paragraph selector.
+    // the container is checked for overflow, the paragraph is used for setting the text
 
-    let sentences = longtext.replace(/(\.+|\!|\?)(\"*|\'*|\)*|}*|]*)(\s|\n|\r|\r\n)/gm, "$1$2|").split("|")
+    let sentences = longtext.replace(/(\.+|\!|\?|,|:)(\"*|\'*|\)*|}*|]*|”*)(\s|\n|\r|\r\n)/gm, "$1$2|").split("|")
     let chunk = ""
     let chunks = []
 
     for (const sentence of sentences) {
+        console.log("sentence",sentence)
         // we don't want to create a chunk that is too long
-        // if we are overflowing before adding the sentence, we are mogen
+        // if we are overflowing before adding the sentence, push the chunk
 
-        const chunk_is_mogen = is_overflowing(hidden_container_selector, paragraph_selector, chunk)
-        if (chunk_is_mogen && chunk.length > 0) {
-            // push the chunk and empty our local acc variable.
+        const theoretical_new_chunk = chunk + sentence + " "
+        const would_this_sentence_overflow_the_chunk = is_overflowing(hidden_container_selector, paragraph_selector, theoretical_new_chunk)
+
+        // sometimes, we begin with a sentence that is too long in itself.
+        // that is a failure of the regex; but we'd rather skip an empty chunk
+        // therefore, we have the chunk.length > 0 check
+
+        if (would_this_sentence_overflow_the_chunk && chunk.length > 0) {
+            // don't add it; use the old chunk instead
+            console.log("accepting chunk", chunk)
             chunks.push(chunk)
-            chunk = ""
+            chunk = sentence + " "
+            continue
         }
 
-        // we are either mogen and have an empty chunk here, OR
-        // we are not mogen. either way, build on the chunk; so that no sentence gets lost
-        chunk = chunk + sentence + " "
+        // if it won't overflow the container; it's ok to add it
+        chunk = theoretical_new_chunk
     }
 
     // make sure we push the last one as well, if it exists

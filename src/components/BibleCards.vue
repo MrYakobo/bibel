@@ -23,7 +23,7 @@
                         @edit="open_edit(wi)"
                         :class="[
                             card_class(wi),
-                            'shadow-lg border-2 p-3 rounded inline-block my-2 mx-1 cursor-default',
+                            'border-2 border-gray-300 p-3 rounded inline-block my-1 mx-1 cursor-default',
                         ]"
                         :reference="w.reference"
                         :text="w.text"

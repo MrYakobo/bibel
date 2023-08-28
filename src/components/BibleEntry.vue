@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <DispCard id="hidden_dispcard" class="opacity-0 absolute pointer-events-none" />
+        <DispCard id="hidden_dispcard" class="absolute invisible pointer-events-none" />
         <div class="flex my-4 justify-center items-end text-xl">
             <div class="mx-1">
                 <p>Version</p>
@@ -142,7 +142,7 @@ function versetxt_to_lst(txt) {
     }
 }
 
-const PAGINATE_MAXLEN = 310
+const PAGINATE_MAXLEN = 280
 
 export default {
     name: 'BibleEntry',

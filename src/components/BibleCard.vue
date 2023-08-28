@@ -1,6 +1,6 @@
 <template>
-    <div class="h-40 relative w-128 handle" @click="$emit('click')">
-        <h1 class="italic text-lg font-bold">
+    <div class="h-25 relative w-128 handle" @click="$emit('click')">
+        <h1 class="text-lg font-bold">
             {{ reference || (text && "&nbsp;") || "Tomt kort" }}
         </h1>
         <p class="text-sm">{{ text || "&nbsp;" }}</p>
