@@ -20,7 +20,7 @@ function paginate_new(longtext, hidden_container_selector, paragraph_selector) {
     let chunks = []
 
     for (const sentence of sentences) {
-        console.log("sentence",sentence)
+        // console.log("sentence",sentence)
         // we don't want to create a chunk that is too long
         // if we are overflowing before adding the sentence, push the chunk
 
@@ -33,8 +33,8 @@ function paginate_new(longtext, hidden_container_selector, paragraph_selector) {
 
         if (would_this_sentence_overflow_the_chunk && chunk.length > 0) {
             // don't add it; use the old chunk instead
-            console.log("accepting chunk", chunk)
-            chunks.push(chunk)
+            // console.log("accepting chunk", chunk)
+            chunks.push(chunk.trim())
             chunk = sentence + " "
             continue
         }
@@ -48,7 +48,7 @@ function paginate_new(longtext, hidden_container_selector, paragraph_selector) {
         chunks.push(chunk)
     }
 
-    return chunks
+    return chunks.filter(chunk => chunk.length > 0)
 }
 
 function paginate(longText, maxChunkSize) {
@@ -80,4 +80,4 @@ function paginate(longText, maxChunkSize) {
     return chunks
 }
 
-export { paginate, paginate_new }
+export { paginate, paginate_new, is_overflowing }

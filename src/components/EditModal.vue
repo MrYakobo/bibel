@@ -14,6 +14,22 @@
                 bg-gray-200
             "
         >
+            <p class="text-xl mb-2 font-bold text-gray-800">Översättning</p>
+            <input
+                type="text"
+                v-model="edit_slide.translation"
+                class="
+                    w-full
+                    italic
+                    text-3xl
+                    font-bold
+                    block
+                    mb-5
+                    shadow-lg
+                    rounded-md
+                    p-5
+                "
+            />
             <p class="text-xl mb-2 font-bold text-gray-800">Bibelreferens</p>
             <input
                 ref="reference_input"

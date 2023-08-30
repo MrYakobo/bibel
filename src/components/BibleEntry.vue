@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <DispCard id="hidden_dispcard" class="absolute invisible pointer-events-none" />
+        <DispCard id="hidden_dispcard" class="!absolute invisible pointer-events-none" />
         <div class="flex my-4 justify-center items-end text-xl">
             <div class="mx-1">
                 <p>Version</p>
@@ -107,6 +107,7 @@
         >
             Importera bibelord
         </button>
+        <button v-if="debug" class="block mx-auto mt-4 bg-green-700 hover:bg-green-900 text-white rounded h-10 px-4 shadow-md text-xl" @click="import_one_from_each_book" >Töm och ta en från varje bok</button>
     </div>
 </template>
 <script>
@@ -148,6 +149,7 @@ export default {
     name: 'BibleEntry',
     data() {
         return {
+            debug: location.search.includes("debug"),
             curr_sfb: "sfb15",
             selected_book: "Första Moseboken",
             selected_chapter: "1",
@@ -155,6 +157,7 @@ export default {
         }
     },
     computed: {
+        ...mapState(['words']),
         ...mapGetters(['longbooks', 'bibledb', 'translations']),
         selected_translation: {
             get() {
@@ -211,7 +214,24 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['add_bible_slides']),
+        import_one_from_each_book(){
+            // delete everything
+            while (true) {
+                this.remove_curr_word()
+                if (this.words.length == 0) {
+                    break
+                }
+            }
+
+            // import one from each book
+            for (const book of this.longbooks) {
+                this.selected_book = book
+                this.selected_chapter = "1"
+                this.selected_verses = "1-2"
+                this.submit()
+            }
+        },
+        ...mapMutations(['add_bible_slides', 'remove_curr_word']),
         disabled_if(bool) {
             return {
                 'opacity-50 pointer-events-none cursor-not-allowed':
@@ -224,16 +244,21 @@ export default {
             this.selected_verses = ""
         },
         submit() {
-            let slides = this.split_bible_slides(this.bible_reference, this.bible_text)
+            let book = this.selected_book
+            let chapter_and_verse = `${this.selected_chapter}:${this.selected_verses}`
+            let slides = this.split_bible_slides(this.bible_reference, {book, chapter_and_verse}, this.bible_text, this.selected_translation)
             this.add_bible_slides(slides)
             this.reset_form()
         },
-        split_bible_slides(original_ref, original_text) {
+        split_bible_slides(original_ref, {book, chapter_and_verse}, original_text, translation) {
             var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide", "#hidden_dispcard #curr_slide_text")
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,
-                    text: s
+                    text: s,
+                    translation: translation,
+                    book,
+                    chapter_and_verse
                 }
                 return o
             })

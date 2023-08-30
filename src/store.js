@@ -61,7 +61,7 @@ const store = new Vuex.Store({
             return Object.keys(state.bibles)
         },
         curr_slide(state) {
-            return state.words[state.i] || { reference: "(ingen referens)", text: "(ingen text)" }
+            return state.words[state.i] || { reference: "(ingen referens)", text: "(ingen text)", book: '(ingen bok)', chapter_and_verse: '(ingen vers)', id: '(inget id)'}
         }
     },
     mutations: {
@@ -254,12 +254,15 @@ const store = new Vuex.Store({
         add_bible_slides(state, slides) {
             // this mutation imports a batch of bible slides
             // because they are related, the ID field is set to the group
+            // we throw in the count as well
 
             this.commit('generate_new_id')
             let group_id = state.counter_id
+            let max_counter = Object.keys(slides).length
 
             for (const [i, slide] of slides.entries()) {
-                let id = group_id + "_" + i
+                let counter = i+1
+                let id = group_id + "_" + counter + "_" + max_counter
                 state.words.push({
                     id,
                     ...slide

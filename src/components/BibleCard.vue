@@ -1,5 +1,5 @@
 <template>
-    <div class="h-25 relative w-128 handle" @click="$emit('click')">
+    <div class="h-32 relative w-128 handle" @click="$emit('click')">
         <h1 class="text-lg font-bold">
             {{ reference || (text && "&nbsp;") || "Tomt kort" }}
         </h1>
