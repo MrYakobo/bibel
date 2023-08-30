@@ -8,7 +8,7 @@
       <div class="p-5 flex flex-col justify-start">
         <KeysViz class="w-full shadow" :keyboard_mappings="keyboard_mappings" />
         <BibleEntry class="w-full shadow-md p-6 my-6" />
-        <div class="zoom-50 bg-gray-500 rounded-lg py-10 mt-auto mb-8">
+        <div class="zoom-50 bg-gray-200 rounded-lg py-10 mt-auto mb-8">
           <div class="w-fhd h-[20rem]">
             <DispCard />
           </div>
@@ -168,6 +168,9 @@ export default {
         e.target.tagName == "TEXTAREA" ||
         e.target.tagName == "SELECT";
       if (inTextField) return;
+
+      let modifierKeyHeld = e.ctrlKey || e.altKey || e.metaKey || e.shiftKey
+      if (modifierKeyHeld) return;
 
       let kbd = this.keyboard_mappings[e.key];
       if (kbd == null) return;
