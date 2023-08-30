@@ -1,5 +1,5 @@
 <template>
-  <div class="w-fhd h-[28rem] fixed bottom-0 overflow-hidden">
+  <div class="w-full absolute bottom-0 left-0 overflow-hidden">
     <DispCard />
   </div>
 </template>
