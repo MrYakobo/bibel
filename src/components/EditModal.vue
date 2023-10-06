@@ -15,39 +15,14 @@
             "
         >
             <p class="text-xl mb-2 font-bold text-gray-800">Översättning</p>
-            <input
-                type="text"
-                v-model="edit_slide.translation"
-                class="
-                    w-full
-                    italic
-                    text-3xl
-                    font-bold
-                    block
-                    mb-5
-                    shadow-lg
-                    rounded-md
-                    p-5
-                "
-            />
-            <p class="text-xl mb-2 font-bold text-gray-800">Bibelreferens</p>
-            <input
-                ref="reference_input"
-                type="text"
-                v-model="edit_slide.reference"
-                placeholder="Första Moseboken 1:1-10"
-                class="
-                    w-full
-                    italic
-                    text-3xl
-                    font-bold
-                    block
-                    mb-5
-                    shadow-lg
-                    rounded-md
-                    p-5
-                "
-            />
+            <input type="text" v-model="edit_slide.translation" :class="input_text_classes" placeholder="sfb15" />
+
+            <p class="text-xl mb-2 font-bold text-gray-800">Bok</p>
+            <input ref="reference_input" type="text" v-model="edit_slide.book" placeholder="Första moseboken" :class="input_text_classes" />
+
+            <p class="text-xl mb-2 font-bold text-gray-800">Kapitel och vers</p>
+            <input ref="reference_input" type="text" v-model="edit_slide.chapter_and_verse" placeholder="1:1-10" :class="input_text_classes" />
+
             <p class="text-xl mt-8 mb-2 font-bold text-gray-800">Bibeltext</p>
             <textarea
                 class="text-2xl w-full h-64 p-4 shadow-lg rounded-md"
@@ -101,6 +76,20 @@
 <script>
 import { mapMutations, mapState } from 'vuex'
 export default {
+    data(){
+        return {
+            input_text_classes: `
+                    w-full
+                    italic
+                    text-3xl
+                    font-bold
+                    block
+                    mb-5
+                    shadow-lg
+                    rounded-md
+                    p-5`
+        }
+    },
     name: 'EditModal',
     computed: {
         ...mapState(['edit_slide'])
@@ -108,6 +97,8 @@ export default {
     methods: {
         ...mapMutations(['set_show_modal', 'write', 'write_words']),
         close() {
+            // default value for reference
+            this.edit_slide.reference = `${this.edit_slide.book} ${this.edit_slide.chapter_and_verse}`
             this.set_show_modal(false)
             this.write_words()
             this.write()

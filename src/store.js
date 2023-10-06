@@ -28,6 +28,15 @@ let channel = join_channel(() => { }, ({ payload }) => {
 
 Vue.use(Vuex)
 
+function NEW_EMPTY_WORD(id){
+    return { reference: "", text: "", book: "", chapter_and_verse: "", id: id}
+}
+
+function DEFAULT_WORD(){
+    // this is a function, because I want a fresh object each time.
+    // A global would reference the same obj each time
+    return { translation: '(ingen översättning)', reference: "(ingen referens)", text: "(ingen text)", book: '(ingen bok)', chapter_and_verse: '(ingen vers)', id: '(inget id)'}
+}
 
 const store = new Vuex.Store({
     state: {
@@ -61,7 +70,7 @@ const store = new Vuex.Store({
             return Object.keys(state.bibles)
         },
         curr_slide(state) {
-            return state.words[state.i] || { reference: "(ingen referens)", text: "(ingen text)", book: '(ingen bok)', chapter_and_verse: '(ingen vers)', id: '(inget id)'}
+            return state.words[state.i] || DEFAULT_WORD()
         }
     },
     mutations: {
@@ -274,12 +283,9 @@ const store = new Vuex.Store({
         add_new_empty_word(state) {
             this.commit('generate_new_id')
             let id = state.counter_id
+            let word = NEW_EMPTY_WORD(id)
 
-            state.words.splice(state.words.length, 0, {
-                reference: "",
-                text: "",
-                id
-            })
+            state.words.splice(state.words.length, 0, word)
             // var newi = state.words.length - 1
             // state.i = newi
             this.commit('write_words')
