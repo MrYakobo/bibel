@@ -1,0 +1,3 @@
+VITE_API_URL=https://stringsaver-instance
+VITE_CHANNEL_URL=https://supabase-instance
+REMOTE_HOST_COLON_PATH=myself@my_server:path/to/www
