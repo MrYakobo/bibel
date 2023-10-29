@@ -11,6 +11,10 @@ function make_form_data(data, field_id, filename) {
     return form_data
 }
 
+
+let channel = null
+
+if (!import.meta.env.VITE_IS_MEMORY) {
 // we want the updates to call the store mutations
 let channel = join_channel(() => { }, ({ payload }) => {
     console.log("GOT PAYLOAD", payload)
@@ -25,6 +29,7 @@ let channel = join_channel(() => { }, ({ payload }) => {
     if (words != null)
         store.commit("set_words_without_write", words)
 })
+}
 
 Vue.use(Vuex)
 

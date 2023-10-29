@@ -1,8 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
 const event = 'updates'
+    const in_memory = import.meta.env.IN_MEMORY
 
 function join_channel(subscribed_handler, payload_handler) {
+	if (in_memory) return
+
     const supabase_url = import.meta.env.VITE_CHANNEL_URL
     const ANON_KEY = import.meta.env.VITE_CHANNEL_KEY
     const room = 'any'
@@ -28,6 +31,8 @@ function join_channel(subscribed_handler, payload_handler) {
 }
 
 function write(channel, payload) {
+	if (in_memory) return
+
     console.log("WRITING PAYLOAD", { channel, payload })
     channel.send({ type: 'broadcast', event, payload })
 }
