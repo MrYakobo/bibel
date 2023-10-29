@@ -5,9 +5,9 @@ import { join_channel, write } from './db'
 
 
 function make_form_data(data, field_id, filename) {
-    var form_data = new FormData();
+    var form_data = new FormData()
     const blob = new Blob([data], { type: 'text/plain' })
-    form_data.append(field_id, blob, filename);
+    form_data.append(field_id, blob, filename)
     return form_data
 }
 
@@ -15,32 +15,32 @@ function make_form_data(data, field_id, filename) {
 let channel = null
 
 if (!import.meta.env.VITE_IS_MEMORY) {
-// we want the updates to call the store mutations
-let channel = join_channel(() => { }, ({ payload }) => {
-    console.log("GOT PAYLOAD", payload)
-    let i = payload.i
-    let show = payload.show
-    let words = payload.words
+    // we want the updates to call the store mutations
+    let channel = join_channel(() => { }, ({ payload }) => {
+        console.log("GOT PAYLOAD", payload)
+        let i = payload.i
+        let show = payload.show
+        let words = payload.words
 
-    if (i != null)
-        store.commit("set_i_without_write", i)
-    if (show != null)
-        store.commit("set_show_without_write", show)
-    if (words != null)
-        store.commit("set_words_without_write", words)
-})
+        if (i != null)
+            store.commit("set_i_without_write", i)
+        if (show != null)
+            store.commit("set_show_without_write", show)
+        if (words != null)
+            store.commit("set_words_without_write", words)
+    })
 }
 
 Vue.use(Vuex)
 
-function NEW_EMPTY_WORD(id){
-    return { reference: "", text: "", book: "", chapter_and_verse: "", id: id}
+function NEW_EMPTY_WORD(id) {
+    return { reference: "", text: "", book: "", chapter_and_verse: "", id: id }
 }
 
-function DEFAULT_WORD(){
+function DEFAULT_WORD() {
     // this is a function, because I want a fresh object each time.
     // A global would reference the same obj each time
-    return { translation: '(ingen översättning)', reference: "(ingen referens)", text: "(ingen text)", book: '(ingen bok)', chapter_and_verse: '(ingen vers)', id: '(inget id)'}
+    return { translation: '(ingen översättning)', reference: "(ingen referens)", text: "(ingen text)", book: '(ingen bok)', chapter_and_verse: '(ingen vers)', id: '(inget id)' }
 }
 
 const store = new Vuex.Store({
@@ -151,7 +151,7 @@ const store = new Vuex.Store({
         set_i(state, i) {
             state.i = i
             // why not write everything to channel while we're at it
-            write(channel, {i: i, show: state.show, words: state.words})
+            write(channel, { i: i, show: state.show, words: state.words })
             this.commit("write")
         },
         write_i(state) {
@@ -275,7 +275,7 @@ const store = new Vuex.Store({
             let max_counter = Object.keys(slides).length
 
             for (const [i, slide] of slides.entries()) {
-                let counter = i+1
+                let counter = i + 1
                 let id = group_id + "_" + counter + "_" + max_counter
                 state.words.push({
                     id,
