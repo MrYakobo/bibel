@@ -97,6 +97,9 @@ const store = new Vuex.Store({
                         console.error(e)
                     }
 
+                    let curr_slide = t.words[0]
+                    let curr_i = 0
+
                 }).catch(e =>
                     console.error(e)
                 )

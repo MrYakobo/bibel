@@ -107,7 +107,13 @@
         >
             Importera bibelord
         </button>
+        <!-- TODO: selektiv screenshot.
+            Lägg den i lower thirds by default; så att man inte behöver lägga på effekter i kdenlive
+            Ladda ner som zip ?
+        -->
+        <button v-if="debug" @click="screenshot">Screenshot all</button>
         <button v-if="debug" class="block mx-auto mt-4 bg-green-700 hover:bg-green-900 text-white rounded h-10 px-4 shadow-md text-xl" @click="import_one_from_each_book" >Töm och ta en från varje bok</button>
+        <a href="" id="a" class="hidden"></a>
     </div>
 </template>
 <script>
@@ -115,6 +121,24 @@ import { mapGetters, mapState, mapMutations } from 'vuex'
 import pick from 'lodash.pick'
 import {paginate, paginate_new} from '../paginate'
 import DispCard from '../display/DispCard.vue'
+
+import html2canvas from 'html2canvas'
+
+function download(canvas, filename) {
+  const data = canvas.toDataURL("image/png;base64");
+  const a = document.getElementById("a")
+  a.download = filename
+  a.href = data
+  a.click()
+}
+
+async function screenshot(i){
+    let disp = document.getElementById("dispcard")
+    let now = new Date().toISOString().split("T")[0]
+    let filename = `bibelord_${now}_${i}`
+    let c = await html2canvas(disp, {})
+    await download(c, filename)
+}
 
 function titleCase(str) {
     str = str.toLowerCase().split(" ")
@@ -214,6 +238,25 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(["set_i_without_write"]),
+        async screenshot(){
+            async function processWords() {
+                for (let i = 0; i < this.words.length; i++) {
+                    this.set_i_without_write(i);
+
+                    await new Promise(resolve => {
+                        this.$nextTick(() => {
+                            resolve()
+                        })
+                    })
+                    console.log(i)
+
+                    await screenshot(i)
+                }
+            }
+
+            await processWords.call(this);
+        },
         import_one_from_each_book(){
             // delete everything
             while (true) {

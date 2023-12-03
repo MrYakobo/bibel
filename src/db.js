@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 const event = 'updates'
-    const in_memory = import.meta.env.IN_MEMORY
+const in_memory = location.search.includes("in_memory")
 
 function join_channel(subscribed_handler, payload_handler) {
 	if (in_memory) return

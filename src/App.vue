@@ -9,7 +9,7 @@
         <KeysViz class="w-full shadow" :keyboard_mappings="keyboard_mappings" />
         <BibleEntry class="w-full shadow-md p-6 my-6" />
         <div class="zoom-50 bg-gray-200 rounded-lg py-10 mt-auto mb-8">
-          <div class="w-fhd h-[20rem]">
+          <div id="dispcard" class="w-fhd h-[20rem]">
             <DispCard />
           </div>
         </div>

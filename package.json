@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.20.0",
+    "html2canvas": "^1.4.1",
     "lodash.pick": "^4.4.0",
     "vite-plugin-vue2": "^1.4.0",
     "vue": "^2.6.12",
