@@ -294,7 +294,7 @@ export default {
             this.reset_form()
         },
         split_bible_slides(original_ref, {book, chapter_and_verse}, original_text, translation) {
-            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide", "#hidden_dispcard #curr_slide_text")
+            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide_text", "#hidden_dispcard #curr_slide_text")
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,
