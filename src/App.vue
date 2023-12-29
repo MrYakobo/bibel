@@ -11,6 +11,7 @@
         <div class="zoom-50 bg-gray-200 rounded-lg py-10 mt-auto mb-8">
           <div id="dispcard" class="w-fhd h-[20rem]">
             <DispCard />
+            <DispCard id="hidden_dispcard" class="pointer-events-none" />
           </div>
         </div>
       </div>

@@ -1,66 +1,70 @@
-function is_overflowing_right_now(paragraph_selector) {
-    const paragraph = document.querySelector(paragraph_selector)
+function get_p(paragraph) {
+    return {
+        sw: paragraph.scrollWidth,
+        cw: paragraph.clientWidth,
+        sh: paragraph.scrollHeight,
+        ch: paragraph.clientHeight
+    }
 
+}
+function is_overflowing_right_now(paragraph) {
     const overflow_x = paragraph.scrollWidth > paragraph.clientWidth
     const overflow_y = paragraph.scrollHeight > paragraph.clientHeight
 
     return overflow_x || overflow_y
 }
 
-function is_overflowing_with_text(paragraph_selector, text) {
+async function is_overflowing_with_text(paragraph_selector, text) {
     const paragraph = document.querySelector(paragraph_selector)
     paragraph.textContent = text
+    await new Promise(r => setTimeout(r, 100))
 
     return is_overflowing_right_now(paragraph_selector)
 }
 
-function paginate_new(longtext, paragraph_selector) {
+async function paginate_new(longtext, paragraph_selector) {
     // to be used with an hidden element, that has the same styling as the main container
 
     let sentences = longtext.split(" ")
     let chunk = ""
     let chunks = []
 
-    for (let i = 0; i < sentences.length; i++) {
-        const sentence = sentences[i];
-        // console.log("sentence",sentence)
+    let last_p = null
+
+    const paragraph = document.querySelector(paragraph_selector)
+
+    for (const word of sentences) {
         // we don't want to create a chunk that is too long
         // if we are overflowing before adding the sentence, push the chunk
 
-        const theoretical_new_chunk = chunk + sentence + " "
-        const would_this_sentence_overflow_the_chunk = is_overflowing_with_text(paragraph_selector, theoretical_new_chunk)
+        const new_chunk = chunk + word + " "
+        paragraph.textContent = new_chunk
 
-        // sometimes, we begin with a sentence that is too long in itself.
-        // that is a failure of the regex; but we'd rather skip an empty chunk
-        // therefore, we have the chunk.length > 0 check
+        await new Promise(r => setTimeout(r, 0))
 
-        if (would_this_sentence_overflow_the_chunk && chunk.length > 0) {
-            // Check if breaking the chunk will create an horunge
-            const next_sentence = sentences[i + 1];
-            const would_next_sentence_overflow = is_overflowing_with_text(paragraph_selector, chunk + next_sentence + " ");
+        const would_the_new_chunk_overflow = is_overflowing_right_now(paragraph)
 
-            if (would_next_sentence_overflow) {
-                // If breaking the chunk creates an orphan, skip it and start a new one
-                chunks.push(chunk.trim())
-                chunk = sentence + " "
-            } else {
-                // If breaking the chunk doesn't create an orphan, add the next sentence to the current chunk
-                chunk += sentence + " "
-            }
-
+        if (would_the_new_chunk_overflow && chunk.length > 0) {
+            // accept chunk as-is and move on
+            console.log("accepting", chunk.trim(), get_p(paragraph), last_p)
+            chunks.push(chunk.trim())
+            chunk = word + " "
             continue
         }
 
-        // if it won't overflow the container; it's ok to add it
-        chunk = theoretical_new_chunk
+        // if new chunk won't overflow the container, continue iterating
+        console.log("append", word, get_p(paragraph), last_p)
+        last_p = get_p(paragraph)
+        chunk = new_chunk
     }
 
     // make sure we push the last one as well, if it exists
     if (chunk.length > 0) {
+        console.log("accepting last chunk:", chunk)
         chunks.push(chunk)
     }
 
     return chunks.filter(chunk => chunk.length > 0)
 }
 
-export { paginate_new, is_overflowing_right_now}
+export { paginate_new, is_overflowing_right_now }

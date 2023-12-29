@@ -1,6 +1,5 @@
 <template>
     <div class="">
-        <DispCard id="hidden_dispcard" class="!absolute invisible pointer-events-none" />
         <div class="flex my-4 justify-center items-end text-xl">
             <div class="mx-1">
                 <p>Version</p>
@@ -275,7 +274,7 @@ export default {
             // check for overflow
             for (let i = 0; i <= this.words.length; i++) {
                 this.set_i(i)
-                await new Promise(r => setTimeout(r, 100));
+                await new Promise(r => setTimeout(r, 10));
                 let paragraph = document.querySelector("#dispcard #curr_slide_text")
                 let p = {
                     sw: paragraph.scrollWidth,
@@ -288,7 +287,7 @@ export default {
                 }
             }
         },
-        import_one_from_each_book(){
+        async import_one_from_each_book(){
             // delete everything
             while (true) {
                 this.remove_curr_word()
@@ -302,7 +301,7 @@ export default {
                 this.selected_book = book
                 this.selected_chapter = "1"
                 this.selected_verses = "1-2"
-                this.submit()
+                await this.submit()
             }
         },
         ...mapMutations(['add_bible_slides', 'remove_curr_word', 'inc', 'set_i']),
@@ -317,15 +316,15 @@ export default {
             this.selected_chapter = ""
             this.selected_verses = ""
         },
-        submit() {
+        async submit() {
             let book = this.selected_book
             let chapter_and_verse = `${this.selected_chapter}:${this.selected_verses}`
-            let slides = this.split_bible_slides(this.bible_reference, {book, chapter_and_verse}, this.bible_text, this.selected_translation)
+            let slides = await this.split_bible_slides(this.bible_reference, {book, chapter_and_verse}, this.bible_text, this.selected_translation)
             this.add_bible_slides(slides)
             this.reset_form()
         },
-        split_bible_slides(original_ref, {book, chapter_and_verse}, original_text, translation) {
-            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide_text")
+        async split_bible_slides(original_ref, {book, chapter_and_verse}, original_text, translation) {
+            var arr = await paginate_new(original_text, "#hidden_dispcard #curr_slide_text")
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,
