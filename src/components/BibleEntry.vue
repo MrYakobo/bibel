@@ -112,14 +112,28 @@
             Ladda ner som zip ?
         -->
         <button v-if="debug" @click="screenshot">Screenshot all</button>
-        <button v-if="debug" class="block mx-auto mt-4 bg-green-700 hover:bg-green-900 text-white rounded h-10 px-4 shadow-md text-xl" @click="import_one_from_each_book" >Töm och ta en från varje bok</button>
+        <button v-if="debug" class="block mx-auto mt-4 bg-green-700 hover:bg-green-900 text-white rounded h-10 px-4 shadow-md text-xl" @click="import_one_from_each_book">Töm och ta en från varje bok  </button>
+        <button v-if="debug" class="block mx-auto mt-4 bg-green-700 hover:bg-green-900 text-white rounded h-10 px-4 shadow-md text-xl" @click="verify_no_overflow">verifiera ingen overflow</button>
+        
         <a href="" id="a" class="hidden"></a>
     </div>
 </template>
+<style>
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+</style>
 <script>
 import { mapGetters, mapState, mapMutations } from 'vuex'
 import pick from 'lodash.pick'
-import {paginate, paginate_new} from '../paginate'
+import {is_overflowing_right_now, paginate_new} from '../paginate'
 import DispCard from '../display/DispCard.vue'
 
 import html2canvas from 'html2canvas'
@@ -181,7 +195,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['words']),
+        ...mapState(['words', 'i']),
         ...mapGetters(['longbooks', 'bibledb', 'translations']),
         selected_translation: {
             get() {
@@ -257,6 +271,23 @@ export default {
 
             await processWords.call(this);
         },
+        async verify_no_overflow(){
+            // check for overflow
+            for (let i = 0; i <= this.words.length; i++) {
+                this.set_i(i)
+                await new Promise(r => setTimeout(r, 100));
+                let paragraph = document.querySelector("#dispcard #curr_slide_text")
+                let p = {
+                    sw: paragraph.scrollWidth,
+                    cw: paragraph.clientWidth,
+                    sh: paragraph.scrollHeight,
+                    ch: paragraph.clientHeight
+                }
+                if ((p.sw > p.cw) || (p.sh > p.ch)) {
+                    throw new Error(`overflow at slide ${this.i}: ${JSON.stringify(p)}!`)
+                }
+            }
+        },
         import_one_from_each_book(){
             // delete everything
             while (true) {
@@ -274,7 +305,7 @@ export default {
                 this.submit()
             }
         },
-        ...mapMutations(['add_bible_slides', 'remove_curr_word']),
+        ...mapMutations(['add_bible_slides', 'remove_curr_word', 'inc', 'set_i']),
         disabled_if(bool) {
             return {
                 'opacity-50 pointer-events-none cursor-not-allowed':
@@ -294,7 +325,7 @@ export default {
             this.reset_form()
         },
         split_bible_slides(original_ref, {book, chapter_and_verse}, original_text, translation) {
-            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide_text", "#hidden_dispcard #curr_slide_text")
+            var arr = paginate_new(original_text, "#hidden_dispcard #curr_slide_text")
             return arr.map((s, i) => {
                 var o = {
                     reference: original_ref,

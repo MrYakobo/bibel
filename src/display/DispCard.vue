@@ -20,7 +20,7 @@
         class="leading-[3rem] tracking-[-1px] px-10 pt-5 pb-3 font-semibold dark:px-7 text-[42px] h-[10rem] overflow-auto w-[1340px]"
         id="curr_slide"
       >
-        <p id="curr_slide_text" class="h-full flex justify-start items-center">
+        <p id="curr_slide_text" class="h-full flex justify-start items-center overflow-auto">
           {{ curr_slide.text }}
         </p>
       </div>
