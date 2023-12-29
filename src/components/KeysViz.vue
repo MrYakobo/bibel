@@ -19,11 +19,28 @@
             <span class="text-2xl" v-html="kbd.label"></span>
             <p class="text-sm">{{ kbd.text }}</p>
         </div>
+        <div class="flex w-64 h-15 rounded-lg border m-3 shadow-lg justify-center items-center flex-col" v-if="git_version && debug">
+            {{ git_version }}
+        </div>
     </div>
 </template>
 <script>
 export default {
     name: "KeysViz",
     props: ['keyboard_mappings'],
+    data() {
+        return {
+            debug: location.search.includes("debug"),
+        }
+    },
+    computed: {
+        git_version(){
+            let c = import.meta.env.VITE_COMMIT_DATE
+            if (c)
+                return c
+
+            return "git version"
+        }
+    }
 }
 </script>

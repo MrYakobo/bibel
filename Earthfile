@@ -8,12 +8,17 @@ build:
     ARG VITE_CHANNEL_URL
     ENV VITE_API_URL="$VITE_API_URL"
     ENV VITE_CHANNEL_URL="$VITE_CHANNEL_URL"
+    COPY .git .git
+    ARG VITE_COMMIT_DATE="$(git log -1 --date=iso --format=%ad)"
+    ENV VITE_COMMIT_DATE="$VITE_COMMIT_DATE"
 
-    COPY . .
-    RUN rm -f .env
+    WORKDIR /app
+    COPY display display
+    COPY fullscreen fullscreen
+    COPY public public
+    COPY src src
+    COPY index.html *.json *.js .
     RUN npm ci
-
-    RUN apt-get update && apt-get install -y openssh-client
 
     RUN --secret VITE_CHANNEL_KEY npm run build
 
@@ -22,20 +27,14 @@ build:
 
 deploy:
     FROM +build
-    # skitdumt :)
-    # we use b64 to encode the private key file into a credential
-    # decode that. then, decrypt the key using the secret passphrase
-    # then, scp the output
-
     ARG REMOTE_HOST_COLON_PATH
-
-    RUN --mount=type=secret,id=SSH_PRIVATE_KEY_B64,target=id_mount base64 -d < id_mount > id && chmod 0600 id
-    RUN --secret SSH_PRIVATE_KEY_PASSPHRASE ssh-keygen -P "$SSH_PRIVATE_KEY_PASSPHRASE" -p -f id -N ""
-
     COPY +build/dist dist
-
     # Copy the output to the remote server using scp
-    RUN --push scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i id -r dist/* $REMOTE_HOST_COLON_PATH
+    # assumes that you have the remote in your ssh config and have ran this beforehand:
+    # eval $(ssh-agent -c)
+    # ssh-add ~/.ssh/id_rsa
+
+    RUN --ssh --push scp -o StrictHostKeyChecking=no -r dist/* $REMOTE_HOST_COLON_PATH
 
 main:
     BUILD +build
