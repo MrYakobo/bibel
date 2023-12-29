@@ -16,7 +16,7 @@ let channel = null
 
 if (!import.meta.env.VITE_IS_MEMORY) {
     // we want the updates to call the store mutations
-    let channel = join_channel(() => { }, ({ payload }) => {
+    channel = join_channel(() => { }, ({ payload }) => {
         console.log("GOT PAYLOAD", payload)
         let i = payload.i
         let show = payload.show
