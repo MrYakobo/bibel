@@ -118,8 +118,7 @@
 </template>
 <script>
 import { mapGetters, mapState, mapMutations } from 'vuex'
-import pick from 'lodash.pick'
-import {paginate, paginate_new} from '../paginate'
+import {paginate_new, get_bible_text} from '../paginate'
 import DispCard from '../display/DispCard.vue'
 
 import html2canvas from 'html2canvas'
@@ -137,37 +136,8 @@ async function screenshot(i){
     let now = new Date().toISOString().split("T")[0]
     let filename = `bibelord_${now}_${i}`
     let c = await html2canvas(disp, {})
-    await download(c, filename)
+    download(c, filename)
 }
-
-function titleCase(str) {
-    str = str.toLowerCase().split(" ")
-    for (var i = 0; i < str.length; i++) {
-        str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1)
-    }
-    return str.join(" ")
-}
-function range(start, end) {
-    // https://stackoverflow.com/a/33457557/
-    return Array(end - start + 1).fill().map((_, idx) => start + idx)
-}
-function versetxt_to_lst(txt) {
-    // 1-4 => [1,2,3,4]
-    // 1 => [1]
-    let parts = txt.split("-")
-    if (parts.length == 1 || parts[1] == "")
-        return parts
-
-    try {
-        let [lo, hi] = parts.map(a => parseInt(a))
-        return range(lo, hi)
-    }
-    catch (e) {
-        // parseint error or RangeError, it's cool man
-    }
-}
-
-const PAGINATE_MAXLEN = 280
 
 export default {
     name: 'BibleEntry',
@@ -225,11 +195,7 @@ export default {
             if (!(this.selected_book && this.selected_chapter && this.selected_verses))
                 return ""
 
-            let chapter = this.bibledb[this.selected_book][this.selected_chapter]
-            let verses = versetxt_to_lst(this.selected_verses)
-
-            let selection = Object.values(pick(chapter, verses))
-            return selection.join(" ")
+            return get_bible_text(this.bibledb, this.selected_book, this.selected_chapter, this.selected_verses)
         },
         bible_reference() {
             if (!(this.selected_book && this.selected_chapter && this.selected_verses))

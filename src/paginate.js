@@ -1,3 +1,33 @@
+import pick from 'lodash.pick'
+
+function range(start, end) {
+    // https://stackoverflow.com/a/33457557/
+    return Array(end - start + 1).fill().map((_, idx) => start + idx)
+}
+function versetxt_to_lst(txt) {
+    // 1-4 => [1,2,3,4]
+    // 1 => [1]
+    let parts = txt.split("-")
+    if (parts.length == 1 || parts[1] == "")
+        return parts
+
+    try {
+        let [lo, hi] = parts.map(a => parseInt(a))
+        return range(lo, hi)
+    }
+    catch (e) {
+        // parseint error or RangeError, it's cool man
+    }
+}
+
+function get_bible_text(bibledb, selected_book, selected_chapter, selected_verses) {
+    let chapter = bibledb[selected_book][selected_chapter]
+    let verses = versetxt_to_lst(selected_verses)
+
+    let selection = Object.values(pick(chapter, verses))
+    return selection.join(" ")
+}
+
 function is_overflowing(container_selector, paragraph_selector, text) {
     const paragraph = document.querySelector(paragraph_selector)
     paragraph.textContent = text
@@ -80,4 +110,4 @@ function paginate(longText, maxChunkSize) {
     return chunks
 }
 
-export { paginate, paginate_new, is_overflowing }
+export { paginate_new, versetxt_to_lst, get_bible_text }

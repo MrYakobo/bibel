@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.20.0",
@@ -16,11 +17,14 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@testing-library/vue": "^5.9.0",
     "autoprefixer": "^10.4.0",
+    "happy-dom": "^12.10.3",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.7",
     "vite": "^2.0.5",
     "vite-plugin-windicss": "^1.5.4",
+    "vitest": "^1.1.0",
     "windicss": "^3.4.0"
   }
 }
