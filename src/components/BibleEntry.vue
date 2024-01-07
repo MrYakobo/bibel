@@ -185,7 +185,6 @@ export default {
     data() {
         return {
             debug: location.search.includes("debug"),
-            curr_sfb: "sfb15",
             selected_book: "Första Moseboken",
             selected_chapter: "1",
             selected_verses: "1-10"
@@ -200,6 +199,7 @@ export default {
             },
             set(value) {
                 this.$store.commit('set_selected_translation', value)
+                this.selected_book = Object.keys(this.bibledb)[0]
             }
         },
         chapters() {
