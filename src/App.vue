@@ -190,7 +190,7 @@ export default {
 
     let promises = [];
 
-    let translations = ["sfb15", "sfb98", "b2000"];
+    let translations = ["sfb15", "sfb98", "b2000", "nub"];
     let base = this.base;
 
     for (let translation of translations) {
