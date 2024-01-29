@@ -1,5 +1,9 @@
 <template>
     <div class="flex justify-center">
+        <div class="flex w-64 h-15 rounded-lg border m-3 shadow-lg justify-center items-center flex-col">
+            <a class="text-blue-600 hover:text-blue-500 hover:underline font-bold" href="/fullscreen">Fullscreen display</a>
+            <a class="text-blue-600 hover:text-blue-500 hover:underline font-bold" href="/display">Lower thirds display</a>
+        </div>
         <div
             class="
                 flex
