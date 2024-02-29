@@ -1,6 +1,6 @@
-[submodule "stringsaver"]
-	path = compose/stringsaver
-	url = https://dev.lind.sk/stringsaver.lind.sk
-[submodule "supabase"]
+[submodule "compose/supabase"]
 	path = compose/supabase
 	url = https://dev.lind.sk/supabase-config
+[submodule "compose/stringsaver"]
+	path = compose/stringsaver
+	url = https://dev.lind.sk/stringsaver.lind.sk
