@@ -3,6 +3,5 @@ others/
 .ipynb_*
 node_modules
 dist
-.secret
-.arg
 shit
+.env
