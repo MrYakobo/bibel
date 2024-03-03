@@ -25,4 +25,4 @@ FROM caddy:2.7
 
 WORKDIR /app
 COPY --from=builder /app/dist /app/dist
-ADD Caddyfile /etc/caddy/Caddyfile
+ADD image/Caddyfile /etc/caddy/Caddyfile

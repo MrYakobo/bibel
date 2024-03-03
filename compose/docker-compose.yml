@@ -1,9 +1,0 @@
-# due to limitations in docker-compose, you'll have to
-# supply extra .env flags like this:
-#
-# docker-compose --env-file supabase/.env --env-file app/.env up -d
-
-include:
-  - supabase/docker-compose.yml
-  - app/docker-compose.yml
-  - stringsaver/docker-compose.yml
