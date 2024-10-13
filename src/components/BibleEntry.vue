@@ -303,7 +303,7 @@ export default {
                 this.submit()
             }
         },
-        ...mapMutations(['add_bible_slides', 'remove_curr_word', 'inc', 'set_i']),
+        ...mapMutations(['add_bible_slides', 'remove_curr_word', 'inc', 'set_i', 'set_show']),
         disabled_if(bool) {
             return {
                 'opacity-50 pointer-events-none cursor-not-allowed':
@@ -316,6 +316,8 @@ export default {
             this.selected_verses = ""
         },
         submit() {
+            // the pagination is buggy if show is false prior to importing slides.
+            this.set_show(true)
             let book = this.selected_book
             let chapter_and_verse = `${this.selected_chapter}:${this.selected_verses}`
             let slides = this.split_bible_slides(this.bible_reference, {book, chapter_and_verse}, this.bible_text, this.selected_translation)
