@@ -150,7 +150,7 @@ export default {
           .find((a) => Object.keys(a).length > 0);
         // console.log(refs, id, refs[id])
         let ref = refs[id][0];
-        ref.$el.scrollIntoViewIfNeeded(false);
+        ref.$el.scrollIntoView({ block: "nearest" });
       });
     },
     scroll_curr_into_view() {

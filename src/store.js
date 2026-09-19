@@ -165,7 +165,7 @@ const store = new Vuex.Store({
 
             if (state.is_writing) {
                 console.log("is already writing, trying again in 50ms...")
-                setTimeout(this.write, 50)
+                setTimeout(() => this.commit('write'), 50)
                 return
             }
 
