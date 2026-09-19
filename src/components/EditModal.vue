@@ -95,12 +95,11 @@ export default {
         ...mapState(['edit_slide'])
     },
     methods: {
-        ...mapMutations(['set_show_modal', 'write', 'write_words']),
+        ...mapMutations(['set_show_modal', 'write']),
         close() {
             // default value for reference
             this.edit_slide.reference = `${this.edit_slide.book} ${this.edit_slide.chapter_and_verse}`
             this.set_show_modal(false)
-            this.write_words()
             this.write()
         }
     },
