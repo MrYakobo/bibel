@@ -1,40 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
-
-const event = 'updates'
 const in_memory = location.search.includes("in_memory")
 
-function join_channel(subscribed_handler, payload_handler) {
+function join_channel(payload_handler) {
 	if (in_memory) return
 
-    const supabase_url = import.meta.env.VITE_CHANNEL_URL
-    const ANON_KEY = import.meta.env.VITE_CHANNEL_KEY
-    const room = 'any'
+    const base = import.meta.env.VITE_API_URL
+    const source = new EventSource(`${base}/events`)
+    source.onmessage = (e) => {
+        const { filename, content } = JSON.parse(e.data)
+        payload_handler(filename, content)
+    }
 
-    const supabase = createClient(supabase_url, ANON_KEY, {
-        realtime: {
-            params: {
-                eventsPerSecond: 10,
-            },
-        },
-    })
-
-    const channel = supabase.channel(room)
-    channel
-        .on('broadcast', { event }, (p) => { payload_handler(p) })
-        .subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                subscribed_handler(channel, event)
-            }
-        })
-
-    return channel
+    return source
 }
 
-function write(channel, payload) {
-	if (in_memory) return
-
-    console.log("WRITING PAYLOAD", { channel, payload })
-    channel.send({ type: 'broadcast', event, payload })
-}
-
-export { write, join_channel }
+export { join_channel }

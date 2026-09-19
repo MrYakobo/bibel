@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { join_channel, write } from './db'
+import { join_channel } from './db'
 
 
 function make_form_data(data, field_id, filename) {
@@ -16,18 +16,21 @@ let channel = null
 
 if (!import.meta.env.VITE_IS_MEMORY) {
     // we want the updates to call the store mutations
-    channel = join_channel(() => { }, ({ payload }) => {
-        console.log("GOT PAYLOAD", payload)
-        let i = payload.i
-        let show = payload.show
-        let words = payload.words
+    channel = join_channel((filename, content) => {
+        console.log("GOT PUSH", filename, content)
 
-        if (i != null)
-            store.commit("set_i_without_write", i)
-        if (show != null)
-            store.commit("set_show_without_write", show)
-        if (words != null)
-            store.commit("set_words_without_write", words)
+        if (filename === 'bibel.json') {
+            if (content.words != null)
+                store.commit("set_words_without_write", content.words)
+            if (content.show != null)
+                store.commit("set_show_without_write", content.show)
+        } else if (filename === 'slide.json') {
+            let i = store.state.words.findIndex(w => w.id == content.slide?.id)
+            if (i !== -1)
+                store.commit("set_i_without_write", i)
+            if (content.show != null)
+                store.commit("set_show_without_write", content.show)
+        }
     })
 }
 
@@ -131,15 +134,10 @@ const store = new Vuex.Store({
         },
         set_words(state, words) {
             state.words = words
-            this.commit('write_words')
             this.commit('write')
-        },
-        write_words(state) {
-            write(channel, { words: state.words })
         },
         set_show(state, show) {
             state.show = show
-            this.commit('write_show')
             this.commit("write")
         },
         set_i_without_write(state, i) {
@@ -153,15 +151,7 @@ const store = new Vuex.Store({
         },
         set_i(state, i) {
             state.i = i
-            // why not write everything to channel while we're at it
-            write(channel, { i: i, show: state.show, words: state.words })
             this.commit("write")
-        },
-        write_i(state) {
-            write(channel, { i: state.i })
-        },
-        write_show(state) {
-            write(channel, { show: state.show })
         },
         set_bibledb(state, {
             db,
@@ -219,7 +209,6 @@ const store = new Vuex.Store({
         },
         show_hide(state) {
             state.show = !state.show
-            this.commit('write_show')
             this.commit('write')
         },
         remove_word_at_index(state, di) {
@@ -252,7 +241,6 @@ const store = new Vuex.Store({
             let clamped = Math.min(Math.max(value, minvalue), maxvalue)
 
             this.commit('set_i', clamped)
-            this.commit('write_words')
             this.commit('write')
         },
         add_new_word(state, obj) {
@@ -265,7 +253,6 @@ const store = new Vuex.Store({
             })
             // var newi = state.words.length - 1
             // state.i = newi
-            this.commit('write_words')
             this.commit('write')
         },
         add_bible_slides(state, slides) {
@@ -285,7 +272,6 @@ const store = new Vuex.Store({
                     ...slide
                 })
             }
-            this.commit('write_words')
             this.commit('write')
         },
         add_new_empty_word(state) {
@@ -296,7 +282,6 @@ const store = new Vuex.Store({
             state.words.splice(state.words.length, 0, word)
             // var newi = state.words.length - 1
             // state.i = newi
-            this.commit('write_words')
             this.commit('write')
         },
         remove_curr_word(state) {
